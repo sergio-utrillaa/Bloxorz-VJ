@@ -11,13 +11,28 @@ public class MapCreation : MonoBehaviour
     public TextAsset map; 		// Text file containing the map
     public GameObject tile; 	// Tile prefab used to instance and build the level
     
-    public GameObject cube;
+    public GameObject cube; // Reference to the existing cube in the scene
     public Vector3 cubePosition;
-
-
 
     // Start is called once after the MonoBehaviour is created
     void Start()
+    {
+        Time.timeScale = 1.0f;   // 20% de velocidad → cámara lenta
+        CreateMap();
+    }
+    
+    // Update is called once per frame
+    void Update()
+    {
+        // Check if X key is pressed to restart map creation
+        if (Input.GetKeyDown(KeyCode.X))
+        {
+            RestartMapCreation();
+        }
+    }
+
+    // Method to create the map from the text file
+    void CreateMap()
     {
         char[] seps = {' ', '\n', '\r'}; 	// Characters that act as separators between numbers
         string [] snums; 					// Substrings read from the map file
@@ -53,7 +68,33 @@ public class MapCreation : MonoBehaviour
 
                 }
             }
-      GameObject obj2 = Instantiate(cube, cubePosition, transform.rotation);
+      
+      // Move cube to initial position and reset its parameters
+      if (cube != null)
+      {
+          cube.transform.position = cubePosition;
+          cube.transform.rotation = Quaternion.identity;
+          
+          // Reset MoveCube component parameters
+          MoveCube moveCube = cube.GetComponent<MoveCube>();
+          if (moveCube != null)
+          {
+              moveCube.ResetCube();
+          }
+      }
+    }
+    
+    // Public method to restart the map creation (can be called from UI button)
+    public void RestartMapCreation()
+    {
+        // Destroy all child tiles
+        foreach (Transform child in transform)
+        {
+            Destroy(child.gameObject);
+        }
+        
+        // Recreate the map (this will also reset the cube position)
+        CreateMap();
     }
 
 }
