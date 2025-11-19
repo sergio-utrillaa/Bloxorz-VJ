@@ -13,6 +13,16 @@ public class MapCreation : MonoBehaviour
     
     public GameObject cube; // Reference to the existing cube in the scene
     public Vector3 cubePosition;
+    
+    // Animation parameters
+    public float tileAnimationDuration = 0.5f;  // Duration of tile rise animation
+    public float tileStartHeight = -10.0f;        // Height where tiles start (below ground)
+    public float delayBetweenTiles = 0.05f;      // Delay between each tile animation
+    public float cubeSpawnHeight = 10.0f;        // Height from where cube falls
+    public float cubeFallDuration = 0.8f;        // Duration of cube fall animation
+    
+    private float totalAnimationTime = 0f;      // Total time until all tiles finish
+    private bool cubeSpawned = false;            // Flag to check if cube has been spawned
 
     // Start is called once after the MonoBehaviour is created
     void Start()
@@ -24,6 +34,16 @@ public class MapCreation : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // Check if tiles animation has finished and spawn cube
+        if (!cubeSpawned && totalAnimationTime > 0f)
+        {
+            totalAnimationTime -= Time.deltaTime;
+            if (totalAnimationTime <= 0f)
+            {
+                SpawnCube();
+            }
+        }
+        
         // Check if X key is pressed to restart map creation
         if (Input.GetKeyDown(KeyCode.X))
         {
@@ -51,6 +71,15 @@ public class MapCreation : MonoBehaviour
 		// Create the level. First get the size in tiles of the map from nums
         int sizeX = nums[0], sizeZ = nums[1];
 		
+		// Hide cube initially
+		if (cube != null)
+		{
+		    cube.SetActive(false);
+		}
+		
+		cubeSpawned = false;
+		float maxDelay = 0f;
+		
 		// Process the map. For each tileId == 2 create a copy of the tile prefab
         for(int z=0; z<sizeZ; z++)
             for(int x=0; x<sizeX; x++)
@@ -60,28 +89,51 @@ public class MapCreation : MonoBehaviour
                     int xFlipped = (sizeX - 1) - x;   // <--- volteo horizontal
 
                     // Instantiate the copy at its corresponding location
-                    //Instantiate(tile, new Vector3(x, 0.0f, z), transform.rotation);
                     GameObject obj = Instantiate(tile, new Vector3(xFlipped, -0.05f, z), transform.rotation);
 
                     // Set the new object parent to be the game object containing this script
                     obj.transform.parent = transform;
-
+                    
+                    // Add animation component
+                    TileAnimation tileAnim = obj.AddComponent<TileAnimation>();
+                    
+                    // Wave from bottom-left to top-right
+                    float delay = (x + z) * delayBetweenTiles;
+                    
+                    // Track maximum delay to know when last tile finishes
+                    if (delay > maxDelay)
+                        maxDelay = delay;
+                    
+                    tileAnim.StartAnimation(delay, tileAnimationDuration, tileStartHeight);
                 }
             }
       
-      // Move cube to initial position and reset its parameters
-      if (cube != null)
-      {
-          cube.transform.position = cubePosition;
-          cube.transform.rotation = Quaternion.identity;
-          
-          // Reset MoveCube component parameters
-          MoveCube moveCube = cube.GetComponent<MoveCube>();
-          if (moveCube != null)
-          {
-              moveCube.ResetCube();
-          }
-      }
+      // Calculate total animation time (last tile's delay + animation duration)
+      totalAnimationTime = maxDelay + tileAnimationDuration;
+    }
+    
+    // Method to spawn and initialize the cube
+    void SpawnCube()
+    {
+        if (cube != null && !cubeSpawned)
+        {
+            cube.SetActive(true);
+            cube.transform.position = cubePosition;
+            cube.transform.rotation = Quaternion.identity;
+            
+            // Reset MoveCube component parameters
+            MoveCube moveCube = cube.GetComponent<MoveCube>();
+            if (moveCube != null)
+            {
+                moveCube.ResetCube();
+            }
+            
+            // Add fall animation component
+            CubeSpawnAnimation cubeAnim = cube.AddComponent<CubeSpawnAnimation>();
+            cubeAnim.StartFallAnimation(cubeFallDuration, cubeSpawnHeight);
+            
+            cubeSpawned = true;
+        }
     }
     
     // Public method to restart the map creation (can be called from UI button)
