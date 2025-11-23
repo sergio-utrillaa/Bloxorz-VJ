@@ -4,26 +4,37 @@ using UnityEngine;
 
 public class AsignarPuenteABoton : MonoBehaviour
 {
-    public GameObject[] puentesManuales; // Arrastra aquí el Puente1 desde el Inspector
+    public GameObject[] puentesManuales; // Para BotonRedondo (Puente1)
+    public GameObject[] puentesManualesCruz; // Para BotonCruz (Puente2)
     
     void Start()
     {
-        // Esperar a que se cree el botón
+        // Esperar a que se creen los botones
         Invoke("AsignarPuentes", 0.5f);
     }
     
     void AsignarPuentes()
     {
-        // Buscar el botón creado dinámicamente
-        BotonRedondo boton = FindObjectOfType<BotonRedondo>();
-        if (boton != null && puentesManuales.Length > 0)
+        // Asignar puentes al botón redondo
+        BotonRedondo botonRedondo = FindObjectOfType<BotonRedondo>();
+        if (botonRedondo != null && puentesManuales.Length > 0)
         {
-            boton.puentesControlados = puentesManuales;
-            Debug.Log($"Puentes asignados manualmente al botón: {puentesManuales.Length}");
+            botonRedondo.puentesControlados = puentesManuales;
+            Debug.Log($"Puentes asignados manualmente al botón redondo: {puentesManuales.Length}");
         }
-        else
+        
+        // Asignar puentes al botón cruz
+        BotonCruz botonCruz = FindObjectOfType<BotonCruz>();
+        if (botonCruz != null && puentesManualesCruz.Length > 0)
         {
-            Debug.LogWarning("No se pudo asignar los puentes. Botón o puentes no encontrados.");
+            botonCruz.puentesControlados = puentesManualesCruz;
+            Debug.Log($"Puentes asignados manualmente al botón cruz: {puentesManualesCruz.Length}");
+        }
+        
+        // Mensaje de advertencia si no se encontraron botones o puentes
+        if (botonRedondo == null && botonCruz == null)
+        {
+            Debug.LogWarning("No se encontraron botones para asignar puentes.");
         }
     }
 }

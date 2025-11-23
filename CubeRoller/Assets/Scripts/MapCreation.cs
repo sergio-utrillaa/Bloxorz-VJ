@@ -14,6 +14,7 @@ public class MapCreation : MonoBehaviour
     public GameObject cube; // Reference to the existing cube in the scene
     public Vector3 cubePosition;
     public GameObject botonRedondoPrefab;
+    public GameObject botonCruzPrefab;
     
     // Animation parameters
     public float tileAnimationDuration = 0.5f;  // Duration of tile rise animation
@@ -87,7 +88,7 @@ public class MapCreation : MonoBehaviour
             {
                 int tileValue = nums[z * sizeX + x + 2];
                 
-                if (tileValue == 2 || tileValue == 4)
+                if (tileValue == 2 || tileValue == 4 ||  tileValue == 5)
                 {
                     int xFlipped = (sizeX - 1) - x;   // <--- volteo horizontal
 
@@ -121,6 +122,19 @@ public class MapCreation : MonoBehaviour
                         // Animar el botón desde la misma altura inicial que el tile
                         TileAnimation botonAnim = boton.AddComponent<TileAnimation>();
                         botonAnim.StartAnimation(delay, tileAnimationDuration, tileStartHeight + 0.05f);  // Mismo delay, empieza 0.2 más arriba que el tile
+                    }
+                    else if (tileValue == 5 && botonCruzPrefab != null) // Si es un 5, crear el botón cruz encima del tile
+                    {
+                        // Crear el botón cruz a la altura final del tile (0.0f) con rotación de 45 grados
+                        GameObject botonCruz = Instantiate(botonCruzPrefab, 
+                            new Vector3(xFlipped, 0.0f, z),  // Altura final sobre el tile
+                            Quaternion.Euler(0, 45, 0)); // Rotar 45 grados en el eje Y
+                        botonCruz.transform.parent = transform;
+                        botonCruz.name = $"BotonCruz_{x}_{z}";
+                        
+                        // Animar el botón desde la misma altura inicial que el tile
+                        TileAnimation botonCruzAnim = botonCruz.AddComponent<TileAnimation>();
+                        botonCruzAnim.StartAnimation(delay, tileAnimationDuration, tileStartHeight + 0.05f);
                     }
                 }
             }
