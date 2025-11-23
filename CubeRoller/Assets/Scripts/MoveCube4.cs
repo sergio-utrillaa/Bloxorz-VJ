@@ -57,6 +57,12 @@ public class MoveCube : MonoBehaviour
         lastMoveDirection = Vector2.zero;
     }
 
+    // Method to check if cube is in vertical position
+    public bool IsVertical()
+    {
+        return state == CubeState.Vertical;
+    }
+
 
     // Determine if the cube is grounded by shooting a ray down from the cube location and 
     // looking for hits with ground tiles

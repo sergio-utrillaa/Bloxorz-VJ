@@ -13,6 +13,7 @@ public class MapCreation : MonoBehaviour
     
     public GameObject cube; // Reference to the existing cube in the scene
     public Vector3 cubePosition;
+    public GameObject botonRedondoPrefab;
     
     // Animation parameters
     public float tileAnimationDuration = 0.5f;  // Duration of tile rise animation
@@ -84,7 +85,9 @@ public class MapCreation : MonoBehaviour
         for(int z=0; z<sizeZ; z++)
             for(int x=0; x<sizeX; x++)
             {
-                if (nums[z * sizeX + x + 2] == 2)
+                int tileValue = nums[z * sizeX + x + 2];
+                
+                if (tileValue == 2 || tileValue == 4)
                 {
                     int xFlipped = (sizeX - 1) - x;   // <--- volteo horizontal
 
@@ -105,6 +108,20 @@ public class MapCreation : MonoBehaviour
                         maxDelay = delay;
                     
                     tileAnim.StartAnimation(delay, tileAnimationDuration, tileStartHeight);
+
+                    // Si es un 4, crear el botón encima del tile
+                     if (tileValue == 4 && botonRedondoPrefab != null)
+                    {
+                        // Crear el botón a la altura final del tile (0.0f)
+                        GameObject boton = Instantiate(botonRedondoPrefab, 
+                            new Vector3(xFlipped, 0.0f, z),  // Altura final sobre el tile
+                            Quaternion.identity);
+                        boton.transform.parent = transform;
+                        
+                        // Animar el botón desde la misma altura inicial que el tile
+                        TileAnimation botonAnim = boton.AddComponent<TileAnimation>();
+                        botonAnim.StartAnimation(delay, tileAnimationDuration, tileStartHeight + 0.05f);  // Mismo delay, empieza 0.2 más arriba que el tile
+                    }
                 }
             }
       
