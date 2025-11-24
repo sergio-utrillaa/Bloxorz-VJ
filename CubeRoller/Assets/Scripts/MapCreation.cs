@@ -29,18 +29,20 @@ public class MapCreation : MonoBehaviour
     private bool cubeSpawned = false;            // Flag to check if cube has been spawned
 
     // Nuevas variables para la animación de caída
-    public float tileFallAnimationDuration = 0.5f;  // Duración de la animación de caída
+    public float tileFallAnimationDuration = 0.3f;  // Duración de la animación de caída
     public float tileFallStartHeight = -10.0f;      // Altura final donde terminan los tiles
     public float delayBetweenFallTiles = 0.03f;     // Delay entre cada tile que cae
     
     private bool isFalling = false;                 // Flag para evitar múltiples animaciones de caída
     private List<GameObject> allTiles = new List<GameObject>(); // Lista de todos los tiles creados
+    private List<GameObject> allBridges = new List<GameObject>();
 
     // Start is called once after the MonoBehaviour is created
     void Start()
     {
         Time.timeScale = 1.0f;   // 20% de velocidad → cámara lenta
         CreateMap();
+        FindAllBridges();
     }
     
     // Update is called once per frame
@@ -202,9 +204,22 @@ public class MapCreation : MonoBehaviour
     {
         float maxFallDelay = 0f;
         
+        // Combinar tiles y puentes en una sola lista
+        List<GameObject> allFallingObjects = new List<GameObject>();
+        allFallingObjects.AddRange(allTiles);
+        
+        // Añadir solo puentes que estén activos
+        foreach (GameObject bridge in allBridges)
+        {
+            if (bridge != null && bridge.activeInHierarchy)
+            {
+                allFallingObjects.Add(bridge);
+            }
+        }
+        
         // Crear una lista con índices aleatorios para el orden de caída
         List<int> randomIndices = new List<int>();
-        for (int i = 0; i < allTiles.Count; i++)
+        for (int i = 0; i < allFallingObjects.Count; i++)
         {
             randomIndices.Add(i);
         }
@@ -218,26 +233,28 @@ public class MapCreation : MonoBehaviour
             randomIndices[randomIndex] = temp;
         }
         
-        // Animar cada tile hacia abajo con delay aleatorio
+        // Animar cada objeto hacia abajo con delay aleatorio
         for (int i = 0; i < randomIndices.Count; i++)
         {
-            int tileIndex = randomIndices[i];
-            GameObject tile = allTiles[tileIndex];
+            int objIndex = randomIndices[i];
+            GameObject obj = allFallingObjects[objIndex];
             
-            if (tile != null)
+            if (obj != null)
             {
                 // Usar el mismo patrón de delay que la animación de subida pero más rápido
-                float fallDelay = i * delayBetweenFallTiles; // Orden secuencial basado en el índice mezclado
+                float fallDelay = i * delayBetweenFallTiles;
                 maxFallDelay = Mathf.Max(maxFallDelay, fallDelay);
                 
                 // Crear animación de caída
-                TileFallAnimation fallAnim = tile.AddComponent<TileFallAnimation>();
+                TileFallAnimation fallAnim = obj.AddComponent<TileFallAnimation>();
                 fallAnim.StartFallAnimation(fallDelay, tileFallAnimationDuration, tileFallStartHeight);
+                
+                Debug.Log($"Objeto {obj.name} comenzará caída en {fallDelay}s");
             }
         }
         
         // Esperar a que termine la animación de caída
-        yield return new WaitForSeconds(maxFallDelay + tileFallAnimationDuration + 0.5f);
+        yield return new WaitForSeconds(maxFallDelay + tileFallAnimationDuration + 0.1f);
         
         // Reiniciar la escena
         Debug.Log("Reiniciando escena...");
@@ -255,6 +272,23 @@ public class MapCreation : MonoBehaviour
         
         // Recreate the map (this will also reset the cube position)
         CreateMap();
+    }
+
+    void FindAllBridges()
+    {
+        // Buscar todos los GameObjects que contengan "Puente" en su nombre
+        GameObject[] allObjects = FindObjectsOfType<GameObject>();
+        
+        foreach (GameObject obj in allObjects)
+        {
+            if (obj.name.Contains("Puente") && obj.activeInHierarchy)
+            {
+                allBridges.Add(obj);
+                Debug.Log($"Puente encontrado y añadido a la lista: {obj.name}");
+            }
+        }
+        
+        Debug.Log($"Total de puentes encontrados: {allBridges.Count}");
     }
 
 }

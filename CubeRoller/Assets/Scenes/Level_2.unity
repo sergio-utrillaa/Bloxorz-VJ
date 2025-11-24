@@ -843,6 +843,9 @@ MonoBehaviour:
   delayBetweenTiles: 0.05
   cubeSpawnHeight: 10
   cubeFallDuration: 0.8
+  tileFallAnimationDuration: 0.3
+  tileFallStartHeight: -10
+  delayBetweenFallTiles: 0.03
 --- !u!114 &1325002401
 MonoBehaviour:
   m_ObjectHideFlags: 0
