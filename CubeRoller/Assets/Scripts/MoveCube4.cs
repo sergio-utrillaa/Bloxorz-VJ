@@ -20,6 +20,7 @@ public class MoveCube : MonoBehaviour
     public float edgeRotationAngle = 90.0f; // Degrees to rotate on edge before free fall
     
     private float currentFallSpeed; // Current fall speed (starts at 0, accelerates to fallSpeed)
+    private bool hasFallen = false;
 
     Vector3 rotPoint, rotAxis; 		// Rotation movement is performed around the line formed by rotPoint and rotAxis
 	float rotRemainder; 			// The angle that the cube still has to rotate before the current movement is completed
@@ -254,14 +255,14 @@ public class MoveCube : MonoBehaviour
     {
         if(bFalling)
         {
-            if (false){
+            /*if (false){
                 float rotAmount = fallRotSpeed * Time.deltaTime;
                 transform.RotateAround(pivotPoint, fallRotAxis, rotAmount * fallRotDir);
 
                 transform.Translate(Vector3.left * 1.0f * Time.deltaTime, Space.World);
             }
             // Fase 1: Rotación inicial sobre el borde del tile
-            else if (bEdgeRotation)
+            else*/ if (bEdgeRotation)
             {
                 float rotAmount = fallRotSpeed * Time.deltaTime;
                 
@@ -338,6 +339,18 @@ public class MoveCube : MonoBehaviour
                 
                 // Caer en la dirección calculada con la velocidad actual
                 transform.Translate(direction * currentFallSpeed * Time.deltaTime, Space.World);
+            }
+
+            // Verificar si el cubo ha caído demasiado bajo (al final de toda la lógica de caída)
+            if (transform.position.y < -5.0f && !hasFallen)
+            {
+                hasFallen = true;
+                // Notificar al MapCreation que el cubo se ha caído
+                MapCreation mapCreation = FindObjectOfType<MapCreation>();
+                if (mapCreation != null)
+                {
+                    mapCreation.OnCubeFell();
+                }
             }
         }
         else if (bMoving)

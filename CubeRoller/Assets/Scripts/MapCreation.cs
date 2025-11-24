@@ -1,6 +1,8 @@
 using System;
 using UnityEngine;
-
+using UnityEngine.SceneManagement; // Para reiniciar la escena
+using System.Collections;
+using System.Collections.Generic;
 
 // MapCreation instances multiple copies of a tile prefab to build a level
 // following the contents of a map file
@@ -25,6 +27,14 @@ public class MapCreation : MonoBehaviour
     
     private float totalAnimationTime = 0f;      // Total time until all tiles finish
     private bool cubeSpawned = false;            // Flag to check if cube has been spawned
+
+    // Nuevas variables para la animación de caída
+    public float tileFallAnimationDuration = 0.5f;  // Duración de la animación de caída
+    public float tileFallStartHeight = -10.0f;      // Altura final donde terminan los tiles
+    public float delayBetweenFallTiles = 0.03f;     // Delay entre cada tile que cae
+    
+    private bool isFalling = false;                 // Flag para evitar múltiples animaciones de caída
+    private List<GameObject> allTiles = new List<GameObject>(); // Lista de todos los tiles creados
 
     // Start is called once after the MonoBehaviour is created
     void Start()
@@ -97,6 +107,9 @@ public class MapCreation : MonoBehaviour
 
                     // Set the new object parent to be the game object containing this script
                     obj.transform.parent = transform;
+
+                    // Añadir el tile a la lista
+                    allTiles.Add(obj);
                     
                     // Add animation component
                     TileAnimation tileAnim = obj.AddComponent<TileAnimation>();
@@ -118,6 +131,9 @@ public class MapCreation : MonoBehaviour
                             new Vector3(xFlipped, 0.0f, z),  // Altura final sobre el tile
                             Quaternion.identity);
                         boton.transform.parent = transform;
+
+                        // Añadir el botón a la lista también
+                        allTiles.Add(boton);
                         
                         // Animar el botón desde la misma altura inicial que el tile
                         TileAnimation botonAnim = boton.AddComponent<TileAnimation>();
@@ -131,6 +147,9 @@ public class MapCreation : MonoBehaviour
                             Quaternion.Euler(0, 45, 0)); // Rotar 45 grados en el eje Y
                         botonCruz.transform.parent = transform;
                         botonCruz.name = $"BotonCruz_{x}_{z}";
+
+                        // Añadir el botón a la lista también
+                        allTiles.Add(botonCruz);
                         
                         // Animar el botón desde la misma altura inicial que el tile
                         TileAnimation botonCruzAnim = botonCruz.AddComponent<TileAnimation>();
@@ -165,6 +184,64 @@ public class MapCreation : MonoBehaviour
             
             cubeSpawned = true;
         }
+    }
+
+    // Método llamado cuando el cubo se cae
+    public void OnCubeFell()
+    {
+        if (isFalling) return; // Evitar múltiples llamadas
+        
+        isFalling = true;
+        Debug.Log("¡El cubo se ha caído! Iniciando animación de caída de tiles...");
+        
+        StartCoroutine(AnimateTilesFalling());
+    }
+
+    // Corrutina para animar la caída de todos los tiles
+    IEnumerator AnimateTilesFalling()
+    {
+        float maxFallDelay = 0f;
+        
+        // Crear una lista con índices aleatorios para el orden de caída
+        List<int> randomIndices = new List<int>();
+        for (int i = 0; i < allTiles.Count; i++)
+        {
+            randomIndices.Add(i);
+        }
+        
+        // Mezclar la lista para orden aleatorio
+        for (int i = 0; i < randomIndices.Count; i++)
+        {
+            int temp = randomIndices[i];
+            int randomIndex = UnityEngine.Random.Range(i, randomIndices.Count);
+            randomIndices[i] = randomIndices[randomIndex];
+            randomIndices[randomIndex] = temp;
+        }
+        
+        // Animar cada tile hacia abajo con delay aleatorio
+        for (int i = 0; i < randomIndices.Count; i++)
+        {
+            int tileIndex = randomIndices[i];
+            GameObject tile = allTiles[tileIndex];
+            
+            if (tile != null)
+            {
+                // Usar el mismo patrón de delay que la animación de subida pero más rápido
+                float fallDelay = i * delayBetweenFallTiles; // Orden secuencial basado en el índice mezclado
+                maxFallDelay = Mathf.Max(maxFallDelay, fallDelay);
+                
+                // Crear animación de caída
+                TileFallAnimation fallAnim = tile.AddComponent<TileFallAnimation>();
+                fallAnim.StartFallAnimation(fallDelay, tileFallAnimationDuration, tileFallStartHeight);
+            }
+        }
+        
+        // Esperar a que termine la animación de caída
+        yield return new WaitForSeconds(maxFallDelay + tileFallAnimationDuration + 0.5f);
+        
+        // Reiniciar la escena
+        Debug.Log("Reiniciando escena...");
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
     
     // Public method to restart the map creation (can be called from UI button)
