@@ -22,6 +22,9 @@ public class MoveCube : MonoBehaviour
     private float currentFallSpeed; // Current fall speed (starts at 0, accelerates to fallSpeed)
     private bool hasFallen = false;
 
+    private bool isOnGoalTile = false;
+    private bool isGoalAnimationActive = false;
+
     Vector3 rotPoint, rotAxis; 		// Rotation movement is performed around the line formed by rotPoint and rotAxis
 	float rotRemainder; 			// The angle that the cube still has to rotate before the current movement is completed
     float rotDir; 					// Has rotRemainder to be applied in the positive or negative direction?
@@ -243,6 +246,38 @@ public class MoveCube : MonoBehaviour
         Debug.Log(lastMoveDirection);
     }
 
+    bool IsOnGoalTile()
+    {
+        // Solo verificar si está en posición vertical
+        if (state != CubeState.Vertical)
+            return false;
+        
+        RaycastHit hit;
+        // Raycast desde el centro del cubo hacia abajo
+        if (Physics.Raycast(transform.position, Vector3.down, out hit, 2.0f, layerMask))
+        {
+            return hit.collider.CompareTag("Goal");
+        }
+        
+        return false;
+    }
+    
+    // Método para iniciar la animación de meta
+    public void StartGoalAnimation()
+    {
+        if (!isGoalAnimationActive)
+        {
+            isGoalAnimationActive = true;
+            bMoving = false; // Bloquear movimiento
+            
+            // Añadir componente de animación de meta
+            GoalAnimation goalAnim = gameObject.AddComponent<GoalAnimation>();
+            goalAnim.StartGoalAnimation();
+            
+            Debug.Log("¡Cubo ha llegado a la meta! Iniciando animación...");
+        }
+    }
+
     // Start is called once after the MonoBehaviour is created
     void Start()
     {
@@ -253,6 +288,18 @@ public class MoveCube : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (!isGoalAnimationActive && !bMoving && !bFalling && IsOnGoalTile())
+        {
+            StartGoalAnimation();
+            return; // Salir del Update inmediatamente
+        }
+
+        // Si ya está en animación de meta, no procesar nada más
+        if (isGoalAnimationActive)
+        {
+            return;
+        }
+
         if(bFalling)
         {
             /*if (false){

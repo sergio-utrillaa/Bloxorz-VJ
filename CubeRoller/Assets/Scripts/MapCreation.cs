@@ -158,6 +158,36 @@ public class MapCreation : MonoBehaviour
                         botonCruzAnim.StartAnimation(delay, tileAnimationDuration, tileStartHeight + 0.05f);
                     }
                 }
+                else if (tileValue == 3) // Tile de meta (visible, no invisible)
+                {
+                    int xFlipped = (sizeX - 1) - x;
+                    
+                    // Crear el tile de meta VISIBLE (como un tile normal pero especial)
+                    GameObject goalTile = Instantiate(tile, new Vector3(xFlipped, -0.05f, z), transform.rotation);
+                    goalTile.transform.parent = transform;
+                    goalTile.name = $"GoalTile_{x}_{z}";
+                    goalTile.tag = "Goal"; // Importante: asignar tag Goal
+                    
+                    // Opcional: cambiar material para distinguir visualmente
+                    Renderer renderer = goalTile.GetComponent<Renderer>();
+                    if (renderer != null)
+                    {
+                        // Aquí puedes asignar un material diferente si tienes uno
+                        // renderer.material = goalTileMaterial;
+                    }
+                    
+                    // Añadir el tile de meta a la lista
+                    allTiles.Add(goalTile);
+                    
+                    // Animar el tile de meta como cualquier otro tile
+                    TileAnimation tileAnim = goalTile.AddComponent<TileAnimation>();
+                    float delay = (x + z) * delayBetweenTiles;
+                    if (delay > maxDelay)
+                        maxDelay = delay;
+                    tileAnim.StartAnimation(delay, tileAnimationDuration, tileStartHeight);
+                    
+                    Debug.Log($"Tile de meta creado en posición: ({xFlipped}, {z})");
+                }
             }
       
       // Calculate total animation time (last tile's delay + animation duration)
@@ -289,6 +319,52 @@ public class MapCreation : MonoBehaviour
         }
         
         Debug.Log($"Total de puentes encontrados: {allBridges.Count}");
+    }
+
+    // Nuevo método para avanzar al siguiente nivel
+    public void GoToNextLevel()
+    {
+        // Determinar el siguiente nivel
+        string currentSceneName = SceneManager.GetActiveScene().name;
+        string nextSceneName = GetNextLevelName(currentSceneName);
+        
+        if (!string.IsNullOrEmpty(nextSceneName))
+        {
+            SceneManager.LoadScene(nextSceneName);
+        }
+        else
+        {
+            Debug.Log("¡Has completado todos los niveles!");
+        }
+    }
+
+    // Método para determinar el nombre del siguiente nivel
+    private string GetNextLevelName(string currentLevel)
+    {
+        // Extraer el número del nivel actual
+        if (currentLevel.StartsWith("Level_"))
+        {
+            string numberPart = currentLevel.Substring(6); // Quitar "Level_"
+            if (int.TryParse(numberPart, out int currentLevelNumber))
+            {
+                int nextLevelNumber = currentLevelNumber + 1;
+                string nextLevelName = $"Level_{nextLevelNumber}";
+                
+                // Verificar si el siguiente nivel existe
+                for (int i = 0; i < SceneManager.sceneCountInBuildSettings; i++)
+                {
+                    string scenePath = SceneUtility.GetScenePathByBuildIndex(i);
+                    string sceneName = System.IO.Path.GetFileNameWithoutExtension(scenePath);
+                    
+                    if (sceneName == nextLevelName)
+                    {
+                        return nextLevelName;
+                    }
+                }
+            }
+        }
+        
+        return null; // No hay más niveles
     }
 
 }
