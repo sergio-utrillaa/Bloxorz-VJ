@@ -17,6 +17,7 @@ public class MapCreation : MonoBehaviour
     public Vector3 cubePosition;
     public GameObject botonRedondoPrefab;
     public GameObject botonCruzPrefab;
+    public GameObject botonDivisorPrefab;
     
     // Animation parameters
     public float tileAnimationDuration = 0.5f;  // Duration of tile rise animation
@@ -40,7 +41,7 @@ public class MapCreation : MonoBehaviour
     // Start is called once after the MonoBehaviour is created
     void Start()
     {
-        Time.timeScale = 1.0f;   // 20% de velocidad → cámara lenta
+        Time.timeScale = 0.2f;   // 20% de velocidad → cámara lenta
         CreateMap();
         FindAllBridges();
     }
@@ -100,7 +101,7 @@ public class MapCreation : MonoBehaviour
             {
                 int tileValue = nums[z * sizeX + x + 2];
                 
-                if (tileValue == 2 || tileValue == 4 ||  tileValue == 5)
+                if (tileValue == 2 || tileValue == 4 ||  tileValue == 5 ||  tileValue == 6)
                 {
                     int xFlipped = (sizeX - 1) - x;   // <--- volteo horizontal
 
@@ -156,6 +157,21 @@ public class MapCreation : MonoBehaviour
                         // Animar el botón desde la misma altura inicial que el tile
                         TileAnimation botonCruzAnim = botonCruz.AddComponent<TileAnimation>();
                         botonCruzAnim.StartAnimation(delay, tileAnimationDuration, tileStartHeight + 0.05f);
+                    }
+                    else if (tileValue == 6 && botonDivisorPrefab != null) // Si es un 6, crear el botón divisor encima del tile
+                    {
+                        // Crear el botón cruz a la altura final del tile (0.0f) con rotación de 45 grados
+                        GameObject botonDivisor = Instantiate(botonDivisorPrefab, 
+                            new Vector3(xFlipped, 0.0f, z),  // Altura final sobre el tile
+                            Quaternion.identity); // Rotar 45 grados en el eje Y
+                        botonDivisor.transform.parent = transform;
+                        botonDivisor.name = $"BotonDivisor_{x}_{z}";
+                        // Añadir el botón a la lista también
+                        allTiles.Add(botonDivisor);
+                        
+                        // Animar el botón desde la misma altura inicial que el tile
+                        TileAnimation botonDivisorAnim = botonDivisor.AddComponent<TileAnimation>();
+                        botonDivisorAnim.StartAnimation(delay, tileAnimationDuration, tileStartHeight + 0.05f);
                     }
                 }
                 else if (tileValue == 3) // Tile de meta (visible, no invisible)

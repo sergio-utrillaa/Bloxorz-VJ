@@ -12,10 +12,10 @@ GameObject:
   - component: {fileID: 1891882576840098729}
   - component: {fileID: 7851650930260092652}
   - component: {fileID: 5070020960785683738}
-  - component: {fileID: 8832142083047454742}
   - component: {fileID: -9112845302521902221}
+  - component: {fileID: 7487239728738237037}
   m_Layer: 0
-  m_Name: BotonRedondo
+  m_Name: BotonDividir
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -31,7 +31,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.79999995, y: 0.05, z: 0.79999995}
+  m_LocalScale: {x: 0.8, y: 1, z: 0.8}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -43,7 +43,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3797884833960337822}
-  m_Mesh: {fileID: 10206, guid: 0000000000000000e000000000000000, type: 0}
+  m_Mesh: {fileID: 2534964839176971238, guid: 60a24140b9a1f7b42a8f17fc9146ead8, type: 3}
 --- !u!23 &7851650930260092652
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -106,27 +106,9 @@ CapsuleCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.5000001
-  m_Height: 2
+  m_Height: 1
   m_Direction: 1
   m_Center: {x: 0.000000059604645, y: 0, z: -0.00000008940697}
---- !u!114 &8832142083047454742
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3797884833960337822}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9cfdf0eb0236b5a4f847d8f79adeb901, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  isPressed: 0
-  puentesControlados: []
-  toggleMode: 1
-  efectoDestello: {fileID: 0}
-  colorActivacion: {r: 0, g: 1, b: 0, a: 1}
-  colorDesactivacion: {r: 1, g: 0, b: 0, a: 1}
 --- !u!54 &-9112845302521902221
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -154,3 +136,20 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &7487239728738237037
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3797884833960337822}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dedc33bf3aeb9ea43bba6d617b3ea044, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isPressed: 0
+  smallCube1SpawnOffset: {x: -1, y: 0, z: 0}
+  smallCube2SpawnOffset: {x: 2, y: 0, z: 0}
+  efectoDestello: {fileID: 0}
+  colorActivacion: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
