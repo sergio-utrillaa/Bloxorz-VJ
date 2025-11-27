@@ -5,11 +5,9 @@ using UnityEngine;
 public class BotonDivisor : MonoBehaviour
 {
     public bool isPressed = false;
-    private bool hasTriggered = false;
+    /* private bool hasTriggered = false;
     private float lastTriggerTime = 0f;
-    private float triggerDelay = 0.2f;
-    
-    private Vector3 originalPosition;
+    private float triggerDelay = 0.2f; */
     
     public Vector3 smallCube1SpawnOffset = new Vector3(-2, 0, 0);  // Offset relativo para el primer cubo
     public Vector3 smallCube2SpawnOffset = new Vector3(2, 0, 0);   // Offset relativo para el segundo cubo
@@ -38,7 +36,6 @@ public class BotonDivisor : MonoBehaviour
         }
         
         gameObject.SetActive(true);
-        originalPosition = transform.position;
     }
     
     void OnTriggerEnter(Collider other)
@@ -52,14 +49,12 @@ public class BotonDivisor : MonoBehaviour
     
     void OnTriggerStay(Collider other)
     {
-        if (other.CompareTag("Player") && !hasTriggered && Time.time - lastTriggerTime > triggerDelay)
+        if (other.CompareTag("Player"))
         {
             // Verificar continuamente si el cubo está en posición vertical Y no está en movimiento
             MoveCube moveCube = other.GetComponent<MoveCube>();
             if (moveCube != null && moveCube.IsVertical() && !moveCube.IsMoving())
             {
-                hasTriggered = true;
-                lastTriggerTime = Time.time;
                 PressButton();
                 ActivateSplit(other.transform.position);
             }
@@ -68,10 +63,8 @@ public class BotonDivisor : MonoBehaviour
     
     void OnTriggerExit(Collider other)
     {
-        if (other.CompareTag("Player") && hasTriggered && Time.time - lastTriggerTime > triggerDelay)
+        if (other.CompareTag("Player"))
         {
-            hasTriggered = false;
-            lastTriggerTime = Time.time;
             ReleaseButton();
         }
     }
@@ -79,15 +72,12 @@ public class BotonDivisor : MonoBehaviour
     void PressButton()
     {
         isPressed = true;
-        // Bajar el botón un poco
-        transform.position = originalPosition + Vector3.down * 0.1f;
         Debug.Log("Botón divisor presionado!");
     }
     
     void ReleaseButton()
     {
         isPressed = false;
-        transform.position = originalPosition;
         Debug.Log("Botón divisor liberado!");
     }
     
