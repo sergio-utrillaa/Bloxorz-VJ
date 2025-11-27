@@ -129,27 +129,33 @@ public class CubeManager : MonoBehaviour
     {
         if (smallCube1 == null || smallCube2 == null) return;
         
-        float distance = Vector3.Distance(smallCube1.transform.position, smallCube2.transform.position);
+        // Solo verificar si ambos cubos están quietos
+        MoveCubeSmall move1 = smallCube1.GetComponent<MoveCubeSmall>();
+        MoveCubeSmall move2 = smallCube2.GetComponent<MoveCubeSmall>();
         
-        // Si están adyacentes (aproximadamente 1 unidad de distancia)
-        if (distance <= mergeCheckDistance)
+        if (move1 != null && move1.IsMoving()) return;
+        if (move2 != null && move2.IsMoving()) return;
+        
+        Vector3 pos1 = smallCube1.transform.position;
+        Vector3 pos2 = smallCube2.transform.position;
+        
+        Vector3 diff = pos2 - pos1;
+        
+        // Redondear para verificar si están exactamente adyacentes
+        int dx = Mathf.RoundToInt(diff.x);
+        int dy = Mathf.RoundToInt(diff.y);
+        int dz = Mathf.RoundToInt(diff.z);
+        
+        // Condiciones para que estén adyacentes:
+        // 1. Deben estar en el mismo nivel (dy == 0)
+        // 2. Deben ser adyacentes en X O Z, pero NO en ambos
+        // 3. Si son adyacentes en X, dz debe ser 0 y dx debe ser ±1
+        // 4. Si son adyacentes en Z, dx debe ser 0 y dz debe ser ±1
+        if ((Mathf.Abs(dx) == 1 && dz == 0 && dy == 0) || (Mathf.Abs(dz) == 1 && dx == 0 && dy == 0))
         {
-            // Verificar si están en posiciones adyacentes válidas
-            Vector3 pos1 = smallCube1.transform.position;
-            Vector3 pos2 = smallCube2.transform.position;
-            
-            Vector3 diff = pos2 - pos1;
-            
-            // Redondear para verificar si están exactamente adyacentes
-            int dx = Mathf.RoundToInt(diff.x);
-            int dy = Mathf.RoundToInt(diff.y);
-            int dz = Mathf.RoundToInt(diff.z);
-            
-            // Deben estar en el mismo nivel (y) y adyacentes en x o z
-            if (dy == 0 && ((Mathf.Abs(dx) == 1 && dz == 0) || (Mathf.Abs(dz) == 1 && dx == 0)))
-            {
-                MergeCubes(pos1, pos2, dx, dz);
-            }
+            Debug.Log("Cubos adyacentes, procediendo a unirlos.\nPos1: " + pos1 + " Pos2: " + pos2);
+            Debug.Log("dx: " + dx + " dy: " + dy + " dz: " + dz);
+            MergeCubes(pos1, pos2, dx, dz);
         }
     }
     
@@ -158,16 +164,19 @@ public class CubeManager : MonoBehaviour
         // Calcular posición y rotación del cubo fusionado
         Vector3 mergePosition = (pos1 + pos2) / 2f;
         Quaternion mergeRotation = Quaternion.identity;
+        bool isHorizontalX = false;
         
         // Si están alineados en X, el cubo debe estar horizontal en X
         if (dx != 0)
         {
             mergeRotation = Quaternion.Euler(0, 0, 90);
+            isHorizontalX = true;
         }
         // Si están alineados en Z, el cubo debe estar horizontal en Z
         else if (dz != 0)
         {
             mergeRotation = Quaternion.Euler(90, 0, 0);
+            isHorizontalX = false;
         }
         
         // Destruir los cubos pequeños
@@ -181,17 +190,17 @@ public class CubeManager : MonoBehaviour
         mainCube.transform.rotation = mergeRotation;
         mainCube.SetActive(true);
         
-        // Reiniciar el estado del cubo principal
+        // Establecer el estado horizontal correcto del cubo principal
         MoveCube moveScript = mainCube.GetComponent<MoveCube>();
         if (moveScript != null)
         {
-            moveScript.ResetCube();
+            moveScript.SetHorizontalState(isHorizontalX);
         }
         
         activeControlledCube = mainCube;
         isSplit = false;
         
-        Debug.Log("Cubos unidos de nuevo!");
+        Debug.Log("Cubos unidos de nuevo en estado " + (isHorizontalX ? "HorizontalX" : "HorizontalZ") + "!");
     }
     
     public bool IsSplit()

@@ -41,7 +41,7 @@ public class MapCreation : MonoBehaviour
     // Start is called once after the MonoBehaviour is created
     void Start()
     {
-        Time.timeScale = 0.2f;   // 20% de velocidad → cámara lenta
+        Time.timeScale = 1.0f;   // 20% de velocidad → cámara lenta
         CreateMap();
         FindAllBridges();
     }

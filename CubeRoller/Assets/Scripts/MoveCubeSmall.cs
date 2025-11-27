@@ -18,6 +18,12 @@ public class MoveCubeSmall : MonoBehaviour
     public AudioClip[] sounds;
     public AudioClip fallSound;
     
+    // Method to check if cube is currently moving or falling
+    public bool IsMoving()
+    {
+        return bMoving || bFalling;
+    }
+    
     bool isGrounded()
     {
         RaycastHit hit;

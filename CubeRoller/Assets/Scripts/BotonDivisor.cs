@@ -43,11 +43,20 @@ public class BotonDivisor : MonoBehaviour
     
     void OnTriggerEnter(Collider other)
     {
+        if (other.CompareTag("Player"))
+        {
+            // Solo marcar que el cubo está sobre el botón, no activar todavía
+            Debug.Log("Cubo sobre el botón divisor");
+        }
+    }
+    
+    void OnTriggerStay(Collider other)
+    {
         if (other.CompareTag("Player") && !hasTriggered && Time.time - lastTriggerTime > triggerDelay)
         {
-            // Solo activar si el cubo está en posición vertical
+            // Verificar continuamente si el cubo está en posición vertical Y no está en movimiento
             MoveCube moveCube = other.GetComponent<MoveCube>();
-            if (moveCube != null && moveCube.IsVertical())
+            if (moveCube != null && moveCube.IsVertical() && !moveCube.IsMoving())
             {
                 hasTriggered = true;
                 lastTriggerTime = Time.time;

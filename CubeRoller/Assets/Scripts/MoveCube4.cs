@@ -66,6 +66,36 @@ public class MoveCube : MonoBehaviour
     {
         return state == CubeState.Vertical;
     }
+    
+    // Method to check if cube is currently moving or falling
+    public bool IsMoving()
+    {
+        return bMoving || bFalling || bEdgeRotation;
+    }
+    
+    // Method to set the cube state after merging (HorizontalX or HorizontalZ)
+    public void SetHorizontalState(bool isXAxis)
+    {
+        bMoving = false;
+        bFalling = false;
+        bEdgeRotation = false;
+        
+        if (isXAxis)
+        {
+            state = CubeState.HorizontalX;
+            stateBeforeMove = CubeState.HorizontalX;
+        }
+        else
+        {
+            state = CubeState.HorizontalZ;
+            stateBeforeMove = CubeState.HorizontalZ;
+        }
+        
+        rotRemainder = 0f;
+        edgeRotationRemaining = 0f;
+        currentFallSpeed = fallSpeed;
+        lastMoveDirection = Vector2.zero;
+    }
 
 
     // Determine if the cube is grounded by shooting a ray down from the cube location and 
