@@ -242,7 +242,32 @@ public class MapCreation : MonoBehaviour
         isFalling = true;
         Debug.Log("¡El cubo se ha caído! Iniciando animación de caída de tiles...");
         
+        // Fade out any small cubes that are still in the scene
+        FadeOutSmallCubes();
+        
         StartCoroutine(AnimateTilesFalling());
+    }
+    
+    // Method to fade out small cubes when level resets
+    void FadeOutSmallCubes()
+    {
+        // Find all small cubes in the scene
+        MoveCubeSmall[] smallCubes = FindObjectsOfType<MoveCubeSmall>();
+        
+        foreach (MoveCubeSmall smallCube in smallCubes)
+        {
+            if (smallCube != null && smallCube.gameObject.activeInHierarchy)
+            {
+                // Add fade out component and start fading
+                CubeFadeOut fadeOut = smallCube.gameObject.AddComponent<CubeFadeOut>();
+                fadeOut.StartFadeOut(0.5f); // Fade over 0.5 seconds for slower effect
+                
+                // Disable the movement script so cube doesn't move during fade
+                smallCube.enabled = false;
+                
+                Debug.Log($"Iniciando fade out del cubo pequeño: {smallCube.gameObject.name}");
+            }
+        }
     }
 
     // Corrutina para animar la caída de todos los tiles

@@ -14,7 +14,7 @@ public class MoveCube : MonoBehaviour
     bool bEdgeRotation = false;     // Is the cube doing initial edge rotation before free fall?
     
 	public float rotSpeed; 			// Rotation speed in degrees per second
-    public float fallSpeed; 		// Maximum fall speed in the Y direction
+    public float fallSpeed = 10f; 		// Maximum fall speed in the Y direction
     public float fallAcceleration = 9.8f; // Acceleration of falling (like gravity)
     public float fallRotSpeed = 360.0f; // Rotation speed while falling
     public float edgeRotationAngle = 90.0f; // Degrees to rotate on edge before free fall
