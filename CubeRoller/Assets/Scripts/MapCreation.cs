@@ -18,6 +18,7 @@ public class MapCreation : MonoBehaviour
     public GameObject botonRedondoPrefab;
     public GameObject botonCruzPrefab;
     public GameObject botonDivisorPrefab;
+    public GameObject tileNaranjaPrefab;
     
     // Animation parameters
     public float tileAnimationDuration = 0.5f;  // Duration of tile rise animation
@@ -173,6 +174,28 @@ public class MapCreation : MonoBehaviour
                         TileAnimation botonDivisorAnim = botonDivisor.AddComponent<TileAnimation>();
                         botonDivisorAnim.StartAnimation(delay, tileAnimationDuration, tileStartHeight + 0.05f);
                     }
+                }
+                else if (tileValue == 7 && tileNaranjaPrefab != null)
+                {
+                    int xFlipped = (sizeX - 1) - x;
+                    
+                    GameObject orangeTile = Instantiate(tileNaranjaPrefab, new Vector3(xFlipped, -0.05f, z), transform.rotation);
+                    orangeTile.transform.parent = transform;
+                    orangeTile.name = $"OrangeTile_{x}_{z}";
+                    orangeTile.tag = "OrangeTile"; // Tag especial para tiles naranjas
+                    
+                    allTiles.Add(orangeTile);
+                    
+                    TileAnimation tileAnim = orangeTile.AddComponent<TileAnimation>();
+                    float delay = (x + z) * delayBetweenTiles;
+                    if (delay > maxDelay)
+                        maxDelay = delay;
+                    tileAnim.StartAnimation(delay, tileAnimationDuration, tileStartHeight);
+                    
+                    // Añadir el script que detecta si el cubo está vertical
+                    OrangeTileBehavior orangeBehavior = orangeTile.AddComponent<OrangeTileBehavior>();
+                    
+                    Debug.Log($"Tile naranja creado en posición: ({xFlipped}, {z})");
                 }
                 else if (tileValue == 3) // Tile de meta (visible, no invisible)
                 {

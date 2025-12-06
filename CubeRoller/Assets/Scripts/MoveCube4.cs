@@ -25,6 +25,8 @@ public class MoveCube : MonoBehaviour
     private bool isOnGoalTile = false;
     private bool isGoalAnimationActive = false;
 
+    private bool isOrangeTileFalling = false; 
+
     Vector3 rotPoint, rotAxis; 		// Rotation movement is performed around the line formed by rotPoint and rotAxis
 	float rotRemainder; 			// The angle that the cube still has to rotate before the current movement is completed
     float rotDir; 					// Has rotRemainder to be applied in the positive or negative direction?
@@ -291,6 +293,22 @@ public class MoveCube : MonoBehaviour
         
         return false;
     }
+
+    public void StartOrangeTileFall()
+    {
+        if (!isOrangeTileFalling)
+        {
+            isOrangeTileFalling = true;
+            bMoving = false;
+            bFalling = false;
+            
+            // Añadir componente de animación de caída vertical
+            OrangeTileFallAnimation fallAnim = gameObject.AddComponent<OrangeTileFallAnimation>();
+            fallAnim.StartFallAnimation();
+            
+            Debug.Log("Cubo iniciando caída desde tile naranja");
+        }
+    }
     
     // Método para iniciar la animación de meta
     public void StartGoalAnimation()
@@ -318,6 +336,11 @@ public class MoveCube : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+         if (isOrangeTileFalling)
+        {
+            return;
+        }
+        
         if (!isGoalAnimationActive && !bMoving && !bFalling && IsOnGoalTile())
         {
             StartGoalAnimation();
