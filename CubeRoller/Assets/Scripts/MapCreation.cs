@@ -95,13 +95,39 @@ public class MapCreation : MonoBehaviour
 		cubeSpawned = false;
 		float maxDelay = 0f;
 		
+		// First pass: find spawn positions for split cubes
+		Vector3 cube1SpawnPos = Vector3.zero;
+		Vector3 cube2SpawnPos = Vector3.zero;
+		bool foundCube1Pos = false;
+		bool foundCube2Pos = false;
+		
+		for(int z=0; z<sizeZ; z++)
+		{
+		    for(int x=0; x<sizeX; x++)
+		    {
+		        int tileValue = nums[z * sizeX + x + 2];
+		        int xFlipped = (sizeX - 1) - x;
+		        
+		        if (tileValue == 8)  // Position for small cube 1
+		        {
+		            cube1SpawnPos = new Vector3(xFlipped, 0.5f, z);
+		            foundCube1Pos = true;
+		        }
+		        else if (tileValue == 9)  // Position for small cube 2
+		        {
+		            cube2SpawnPos = new Vector3(xFlipped, 0.5f, z);
+		            foundCube2Pos = true;
+		        }
+		    }
+		}
+		
 		// Process the map. For each tileId == 2 create a copy of the tile prefab
         for(int z=0; z<sizeZ; z++)
             for(int x=0; x<sizeX; x++)
             {
                 int tileValue = nums[z * sizeX + x + 2];
                 
-                if (tileValue == 2 || tileValue == 4 ||  tileValue == 5 ||  tileValue == 6)
+                if (tileValue == 2 || tileValue == 4 ||  tileValue == 5 ||  (tileValue >= 6 && tileValue <= 69))
                 {
                     int xFlipped = (sizeX - 1) - x;   // <--- volteo horizontal
 
@@ -158,14 +184,24 @@ public class MapCreation : MonoBehaviour
                         TileAnimation botonCruzAnim = botonCruz.AddComponent<TileAnimation>();
                         botonCruzAnim.StartAnimation(delay, tileAnimationDuration, tileStartHeight + 0.05f);
                     }
-                    else if (tileValue == 6 && botonDivisorPrefab != null) // Si es un 6, crear el botón divisor encima del tile
+                    else if (tileValue == 6 && botonDivisorPrefab != null)
                     {
-                        // Crear el botón cruz a la altura final del tile (0.0f) con rotación de 45 grados
+                        // Crear el botón divisor a la altura final del tile (0.0f)
                         GameObject botonDivisor = Instantiate(botonDivisorPrefab, 
                             new Vector3(xFlipped, 0.0f, z),  // Altura final sobre el tile
-                            Quaternion.identity); // Rotar 45 grados en el eje Y
+                            Quaternion.identity);
                         botonDivisor.transform.parent = transform;
                         botonDivisor.name = $"BotonDivisor_{x}_{z}";
+                        
+                        // Configurar las posiciones de spawn de los cubos
+                        BotonDivisor botonScript = botonDivisor.GetComponent<BotonDivisor>();
+                        if (botonScript != null)
+                        {
+                            botonScript.smallCube1Position = cube1SpawnPos;
+                            botonScript.smallCube2Position = cube2SpawnPos;
+                            Debug.Log($"Botón divisor configurado: Cubo1 en {cube1SpawnPos}, Cubo2 en {cube2SpawnPos}");
+                        }
+                        
                         // Añadir el botón a la lista también
                         allTiles.Add(botonDivisor);
                         
