@@ -45,6 +45,13 @@ public class MapCreation : MonoBehaviour
         Time.timeScale = 1.0f;   // 20% de velocidad → cámara lenta
         CreateMap();
         FindAllBridges();
+
+        //Crear UI del contador si no existe
+        if (FindObjectOfType<MoveCounterUI>() == null)
+        {
+            GameObject uiObj = new GameObject("MoveCounterUI");
+            uiObj.AddComponent<MoveCounterUI>();
+        }
     }
     
     // Update is called once per frame
@@ -349,6 +356,8 @@ public class MapCreation : MonoBehaviour
         
         // Esperar a que termine la animación de caída
         yield return new WaitForSeconds(maxFallDelay + tileFallAnimationDuration + 0.1f);
+
+        MoveCounter.Instance.RestartLevel();
         
         // Reiniciar la escena
         Debug.Log("Reiniciando escena...");
@@ -388,6 +397,8 @@ public class MapCreation : MonoBehaviour
     // Nuevo método para avanzar al siguiente nivel
     public void GoToNextLevel()
     {
+        MoveCounter.Instance.CompleteLevel();
+
         // Determinar el siguiente nivel
         string currentSceneName = SceneManager.GetActiveScene().name;
         string nextSceneName = GetNextLevelName(currentSceneName);

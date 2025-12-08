@@ -135,6 +135,8 @@ public class MoveCubeSmall : MonoBehaviour
                 
                 // Guardar dirección de movimiento para la caída
                 fallDirection = new Vector3(dir.x, 0, dir.y);
+
+                MoveCounter.Instance.AddMove();
                 
                 if (sounds != null && sounds.Length > 0)
                 {

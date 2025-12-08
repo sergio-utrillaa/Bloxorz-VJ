@@ -49,11 +49,15 @@ public class OrangeTileFallAnimation : MonoBehaviour
         {
             // Llamar al método OnCubeFell que ya tienes implementado
             mapCreation.OnCubeFell();
+
+            // Reiniciar contador antes de llamar a OnCubeFell
+            //MoveCounter.Instance.RestartLevel();
         }
         else
         {
             // Si no se encuentra MapCreation, reiniciar directamente
             Debug.LogWarning("MapCreation no encontrado. Reiniciando nivel directamente...");
+            MoveCounter.Instance.RestartLevel();
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
     }

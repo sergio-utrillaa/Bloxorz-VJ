@@ -493,6 +493,8 @@ public class MoveCube : MonoBehaviour
                 bMoving = true;
                 stateBeforeMove = state; // Guardar el estado antes del movimiento
                 lastMoveDirection = dir; // Guardar la dirección del movimiento
+
+                MoveCounter.Instance.AddMove();
 				
 				// We play a random movemnt sound
                 int iSound = UnityEngine.Random.Range(0, sounds.Length);
