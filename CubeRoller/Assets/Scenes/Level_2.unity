@@ -838,6 +838,8 @@ MonoBehaviour:
     type: 3}
   botonCruzPrefab: {fileID: 7487532029930725775, guid: de65c9a08b4c24c4d931350a34b12f3e,
     type: 3}
+  botonDivisorPrefab: {fileID: 0}
+  tileNaranjaPrefab: {fileID: 0}
   tileAnimationDuration: 0.5
   tileStartHeight: -10
   delayBetweenTiles: 0.05
@@ -868,6 +870,50 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 1022743896}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1568034820
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1568034822}
+  - component: {fileID: 1568034821}
+  m_Layer: 0
+  m_Name: LevelSwitcher
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1568034821
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1568034820}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f4692998b8c6404a95084fdf97834f3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &1568034822
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1568034820}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 10.337804, y: 4.5674677, z: 12.994644}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1926290601 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 9114210099325290405, guid: 2024f3efc1a3b214493fe8734ced46be,
@@ -917,3 +963,4 @@ SceneRoots:
   - {fileID: 1325002399}
   - {fileID: 205670638}
   - {fileID: 1946183870}
+  - {fileID: 1568034822}
