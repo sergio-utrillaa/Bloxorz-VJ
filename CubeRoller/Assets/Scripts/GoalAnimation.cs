@@ -4,43 +4,40 @@ using UnityEngine.SceneManagement;
 
 public class GoalAnimation : MonoBehaviour
 {
-    private Vector3 startPosition;
-    private Vector3 targetPosition;
-    private float animationDuration = 1.0f; // Duración de la animación de hundimiento
-    private float sinkDepth = 1.0f; // Profundidad a la que se hunde el cubo
+    private float fallSpeed = 10.0f; // Velocidad de caída
+    private float fallAcceleration = 20f; // Aceleración de la caída
+    private float currentFallSpeed = 0f;
+    private bool isFalling = false;
     
     public void StartGoalAnimation()
     {
-        startPosition = transform.position;
-        targetPosition = new Vector3(startPosition.x, startPosition.y - sinkDepth, startPosition.z);
-        
+        isFalling = true;
+        currentFallSpeed = 0f;
         StartCoroutine(GoalAnimationSequence());
     }
     
     IEnumerator GoalAnimationSequence()
     {
-        float elapsedTime = 0f;
+        // Pequeña pausa inicial
+        yield return new WaitForSeconds(0.1f);
         
-        // Pequeña pausa inicial (como en Bloxorz)
-        yield return new WaitForSeconds(0.3f);
-        
-        // El cubo se hunde gradualmente (completamente vertical)
-        while (elapsedTime < animationDuration)
+        // Caída con aceleración
+        while (isFalling)
         {
-            elapsedTime += Time.deltaTime;
-            float t = elapsedTime / animationDuration;
+            currentFallSpeed += fallAcceleration * Time.deltaTime;
+            if (currentFallSpeed > fallSpeed)
+                currentFallSpeed = fallSpeed;
             
-            // Usar una curva suave (ease-in-out)
-            t = Mathf.SmoothStep(0f, 1f, t);
+            transform.Translate(Vector3.down * currentFallSpeed * Time.deltaTime, Space.World);
             
-            // Movimiento completamente vertical (sin rotación)
-            transform.position = Vector3.Lerp(startPosition, targetPosition, t);
+            // Terminar cuando el cubo haya caído suficiente
+            if (transform.position.y < -10.0f)
+            {
+                isFalling = false;
+            }
             
             yield return null;
         }
-        
-        // Asegurar posición final
-        transform.position = targetPosition;
         
         // Pausa antes de cambiar de nivel
         yield return new WaitForSeconds(0.5f);

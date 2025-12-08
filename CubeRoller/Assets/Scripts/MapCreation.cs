@@ -210,35 +210,27 @@ public class MapCreation : MonoBehaviour
                         botonDivisorAnim.StartAnimation(delay, tileAnimationDuration, tileStartHeight + 0.05f);
                     }
                 }
-                else if (tileValue == 3) // Tile de meta (visible, no invisible)
+                else if (tileValue == 3) // Tile de meta (invisible - simula un agujero)
                 {
                     int xFlipped = (sizeX - 1) - x;
                     
-                    // Crear el tile de meta VISIBLE (como un tile normal pero especial)
+                    // Crear el tile de meta INVISIBLE (solo collider para detectar llegada)
                     GameObject goalTile = Instantiate(tile, new Vector3(xFlipped, -0.05f, z), transform.rotation);
                     goalTile.transform.parent = transform;
                     goalTile.name = $"GoalTile_{x}_{z}";
                     goalTile.tag = "Goal"; // Importante: asignar tag Goal
                     
-                    // Opcional: cambiar material para distinguir visualmente
+                    // Hacer el tile invisible
                     Renderer renderer = goalTile.GetComponent<Renderer>();
                     if (renderer != null)
                     {
-                        // Aquí puedes asignar un material diferente si tienes uno
-                        // renderer.material = goalTileMaterial;
+                        renderer.enabled = false; // Desactivar el renderer para hacerlo invisible
                     }
                     
-                    // Añadir el tile de meta a la lista
-                    allTiles.Add(goalTile);
+                    // NO añadir el tile de meta a la lista de tiles para que no se anime ni caiga
+                    // allTiles.Add(goalTile); 
                     
-                    // Animar el tile de meta como cualquier otro tile
-                    TileAnimation tileAnim = goalTile.AddComponent<TileAnimation>();
-                    float delay = (x + z) * delayBetweenTiles;
-                    if (delay > maxDelay)
-                        maxDelay = delay;
-                    tileAnim.StartAnimation(delay, tileAnimationDuration, tileStartHeight);
-                    
-                    Debug.Log($"Tile de meta creado en posición: ({xFlipped}, {z})");
+                    Debug.Log($"Tile de meta (invisible) creado en posición: ({xFlipped}, {z})");
                 }
             }
       
