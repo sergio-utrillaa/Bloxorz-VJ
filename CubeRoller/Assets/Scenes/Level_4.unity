@@ -122,6 +122,84 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1001 &205670638
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4656848018725024724, guid: 2024f3efc1a3b214493fe8734ced46be,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 21
+      objectReference: {fileID: 0}
+    - target: {fileID: 4656848018725024724, guid: 2024f3efc1a3b214493fe8734ced46be,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4656848018725024724, guid: 2024f3efc1a3b214493fe8734ced46be,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 4656848018725024724, guid: 2024f3efc1a3b214493fe8734ced46be,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4656848018725024724, guid: 2024f3efc1a3b214493fe8734ced46be,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4656848018725024724, guid: 2024f3efc1a3b214493fe8734ced46be,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4656848018725024724, guid: 2024f3efc1a3b214493fe8734ced46be,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4656848018725024724, guid: 2024f3efc1a3b214493fe8734ced46be,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4656848018725024724, guid: 2024f3efc1a3b214493fe8734ced46be,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4656848018725024724, guid: 2024f3efc1a3b214493fe8734ced46be,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7096695086117136735, guid: 2024f3efc1a3b214493fe8734ced46be,
+        type: 3}
+      propertyPath: fallRotSpeed
+      value: 360
+      objectReference: {fileID: 0}
+    - target: {fileID: 9114210099325290405, guid: 2024f3efc1a3b214493fe8734ced46be,
+        type: 3}
+      propertyPath: m_Name
+      value: Cube 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9114210099325290405, guid: 2024f3efc1a3b214493fe8734ced46be,
+        type: 3}
+      propertyPath: m_TagString
+      value: Player
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 2024f3efc1a3b214493fe8734ced46be, type: 3}
 --- !u!1 &330585543
 GameObject:
   m_ObjectHideFlags: 0
@@ -567,10 +645,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 69a20c07fdf591f46b85b92337650019, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  map: {fileID: 4900000, guid: 267b21b4cf1c8314e919df12474e8b58, type: 3}
+  map: {fileID: 4900000, guid: e3b400230a78aa0468c958ca5f188b24, type: 3}
   tile: {fileID: 7189405941443868808, guid: e50dcff8f139adb4bb9392b89156f777, type: 3}
-  cube: {fileID: 9114210099325290405, guid: 2024f3efc1a3b214493fe8734ced46be, type: 3}
+  cube: {fileID: 1926290601}
   cubePosition: {x: 21, y: 1, z: 5}
+  botonRedondoPrefab: {fileID: 3797884833960337822, guid: 4e526773936265d479275f1f32c29836,
+    type: 3}
+  botonCruzPrefab: {fileID: 0}
+  botonDivisorPrefab: {fileID: 0}
+  tileNaranjaPrefab: {fileID: 7189405941443868808, guid: d43b8ebb405c0d141ab787a200d704b6,
+    type: 3}
+  tileAnimationDuration: 0.5
+  tileStartHeight: -10
+  delayBetweenTiles: 0.05
+  cubeSpawnHeight: 10
+  cubeFallDuration: 0.8
+  tileFallAnimationDuration: 0.3
+  tileFallStartHeight: -10
+  delayBetweenFallTiles: 0.03
+--- !u!1 &1926290601 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 9114210099325290405, guid: 2024f3efc1a3b214493fe8734ced46be,
+    type: 3}
+  m_PrefabInstance: {fileID: 205670638}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -579,3 +677,4 @@ SceneRoots:
   - {fileID: 410087041}
   - {fileID: 832575519}
   - {fileID: 1325002399}
+  - {fileID: 205670638}
