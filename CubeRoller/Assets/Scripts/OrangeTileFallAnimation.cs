@@ -9,10 +9,11 @@ public class OrangeTileFallAnimation : MonoBehaviour
     private float animationDuration = 0.8f;
     private float fallDepth = 10.0f;
     
-    public void StartFallAnimation()
+    public void StartFallAnimation(float duration = 0.8f)
     {
         startPosition = transform.position;
         targetPosition = new Vector3(startPosition.x, startPosition.y - fallDepth, startPosition.z);
+        animationDuration = duration;
         
         StartCoroutine(FallSequence());
     }
@@ -40,8 +41,20 @@ public class OrangeTileFallAnimation : MonoBehaviour
         // Pequeña pausa
         yield return new WaitForSeconds(0.3f);
         
-        // Reiniciar nivel
-        Debug.Log("Reiniciando nivel por caída en tile naranja...");
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        // NUEVO: Activar animación de caída de todos los tiles
+        Debug.Log("Cubo y tile naranja han caído. Activando animación de caída de todos los tiles...");
+        
+        MapCreation mapCreation = FindObjectOfType<MapCreation>();
+        if (mapCreation != null)
+        {
+            // Llamar al método OnCubeFell que ya tienes implementado
+            mapCreation.OnCubeFell();
+        }
+        else
+        {
+            // Si no se encuentra MapCreation, reiniciar directamente
+            Debug.LogWarning("MapCreation no encontrado. Reiniciando nivel directamente...");
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
     }
 }
