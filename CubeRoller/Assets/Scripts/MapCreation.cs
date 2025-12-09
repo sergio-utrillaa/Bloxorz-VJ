@@ -45,6 +45,8 @@ public class MapCreation : MonoBehaviour
     public float fadeOutDuration = 1.0f;            // Duración del fade a negro
     
     private bool isVictoryAnimation = false;        // Flag para evitar múltiples animaciones
+    private bool hasStartedAnimation = false; // Flag para evitar múltiples inicios
+    private bool hasCreatedUI = false; // Nuevo flag para el UI
 
     private List<GameObject> allTiles = new List<GameObject>(); // Lista de todos los tiles creados
     private List<GameObject> allBridges = new List<GameObject>();
@@ -52,15 +54,47 @@ public class MapCreation : MonoBehaviour
     // Start is called once after the MonoBehaviour is created
     void Start()
     {
-        Time.timeScale = 1.0f;   // 20% de velocidad → cámara lenta
-        CreateMap();
-        FindAllBridges();
-
-        //Crear UI del contador si no existe
-        if (FindObjectOfType<MoveCounterUI>() == null)
+        Time.timeScale = 1.0f;
+        
+        // Determinar si es la primera vez en el nivel
+        bool isFirstTime = LevelTransitionManager.Instance.IsFirstTimeInLevel();
+        
+        if (isFirstTime)
         {
-            GameObject uiObj = new GameObject("MoveCounterUI");
-            uiObj.AddComponent<MoveCounterUI>();
+            // Primera vez: mostrar pantalla de Stage
+            StartCoroutine(LevelTransitionManager.Instance.ShowStageScreen(
+                SceneManager.GetActiveScene().name,
+                OnStageScreenComplete
+            ));
+        }
+        else
+        {
+            // Reinicio: fade in directo
+            StartCoroutine(LevelTransitionManager.Instance.FadeInOnRestart(OnFadeInComplete));
+        }
+    }
+    
+    // Callback cuando termina la pantalla de Stage
+    void OnStageScreenComplete()
+    {
+        if (!hasStartedAnimation)
+        {
+            hasStartedAnimation = true;
+            
+            CreateMap();
+            FindAllBridges();
+        }
+    }
+    
+    // Callback cuando termina el fade in en reinicio
+    void OnFadeInComplete()
+    {
+        if (!hasStartedAnimation)
+        {
+            hasStartedAnimation = true;
+            
+            CreateMap();
+            FindAllBridges();
         }
     }
     
@@ -83,7 +117,19 @@ public class MapCreation : MonoBehaviour
             RestartMapCreation();
         }
     }
-
+    
+    // Nuevo método para crear el UI del contador
+    void CreateMoveCounterUI()
+    {
+        if (!hasCreatedUI && FindObjectOfType<MoveCounterUI>() == null)
+        {
+            hasCreatedUI = true;
+            GameObject uiObj = new GameObject("MoveCounterUI");
+            uiObj.AddComponent<MoveCounterUI>();
+            Debug.Log("UI del contador de movimientos creado después de la animación");
+        }
+    }
+    
     // Method to create the map from the text file
     void CreateMap()
     {
@@ -276,6 +322,16 @@ public class MapCreation : MonoBehaviour
       
       // Calculate total animation time (last tile's delay + animation duration)
       totalAnimationTime = maxDelay + tileAnimationDuration;
+      
+      // Crear UI del contador DESPUÉS de crear el mapa
+      // Usar Invoke para crear el UI después de un frame, asegurando que el fade ya terminó
+      Invoke("CreateMoveCounterUIDelayed", 0.1f);
+    }
+    
+    // Nuevo método para crear el UI con delay
+    void CreateMoveCounterUIDelayed()
+    {
+        CreateMoveCounterUI();
     }
     
     // Method to spawn and initialize the cube
@@ -399,6 +455,9 @@ public class MapCreation : MonoBehaviour
         yield return StartCoroutine(FadeToBlackOnFall());
 
         MoveCounter.Instance.RestartLevel();
+        
+        // Marcar que NO es primera vez (es un reinicio)
+        LevelTransitionManager.Instance.SetFirstTimeInLevel(false);
         
         // Reiniciar la escena
         Debug.Log("Reiniciando escena...");
@@ -601,6 +660,9 @@ public class MapCreation : MonoBehaviour
     {
         MoveCounter.Instance.CompleteLevel();
 
+        // Marcar que SÍ es primera vez en el siguiente nivel
+        LevelTransitionManager.Instance.SetFirstTimeInLevel(true);
+
         // Determinar el siguiente nivel
         string currentSceneName = SceneManager.GetActiveScene().name;
         string nextSceneName = GetNextLevelName(currentSceneName);
@@ -614,7 +676,7 @@ public class MapCreation : MonoBehaviour
             Debug.Log("¡Has completado todos los niveles!");
         }
     }
-
+    
     // Método para determinar el nombre del siguiente nivel
     private string GetNextLevelName(string currentLevel)
     {
