@@ -1056,11 +1056,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 05ae877053357b34ea64432685cd7be9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  puentesManuales:
-  - {fileID: 773202759}
-  puentesManualesCruz:
-  - {fileID: 549502023}
-  - {fileID: 1091211449}
+  configuracionBotones:
+  - posicionBoton: {x: 10, y: 0, z: 11}
+    puentes:
+    - {fileID: 1091211449}
+    - {fileID: 549502023}
+    esBotonCruz: 1
+  - posicionBoton: {x: 16, y: 0, z: 11}
+    puentes:
+    - {fileID: 773202759}
+    esBotonCruz: 0
+  toleranciaPosicion: 0.5
 --- !u!1 &1926290601 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 9114210099325290405, guid: 2024f3efc1a3b214493fe8734ced46be,
