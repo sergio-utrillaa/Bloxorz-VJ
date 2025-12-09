@@ -17,6 +17,10 @@ public class MenuAnimations : MonoBehaviour
     public bool fadeOut = true; // También hacer fade out
     public float delayBetweenButtons = 0.05f; // Delay escalonado entre botones
     
+    [Header("Título")]
+    public GameObject titleContainer; // Referencia al TitleContainer
+    public Vector2 titleExitDirection = new Vector2(0, 1); // Dirección de salida del título (arriba por defecto)
+    
     [Header("Opciones Adicionales")]
     public bool scaleDown = false; // Reducir tamaño durante animación
     public float minScale = 0.5f;
@@ -70,6 +74,17 @@ public class MenuAnimations : MonoBehaviour
         
         // Normalizar dirección de salida
         exitDirection.Normalize();
+        titleExitDirection.Normalize();
+        
+        // Animar el título si está asignado
+        if (titleContainer != null)
+        {
+            RectTransform titleRect = titleContainer.GetComponent<RectTransform>();
+            if (titleRect != null)
+            {
+                StartCoroutine(AnimateTitle(titleRect));
+            }
+        }
         
         // Animar cada elemento con delay escalonado
         List<Coroutine> animationCoroutines = new List<Coroutine>();
@@ -130,6 +145,57 @@ public class MenuAnimations : MonoBehaviour
         if (scaleDown)
         {
             element.rectTransform.localScale = element.originalScale * minScale;
+        }
+    }
+    
+    IEnumerator AnimateTitle(RectTransform titleRect)
+    {
+        Vector2 originalPosition = titleRect.anchoredPosition;
+        Vector2 targetPosition = originalPosition + titleExitDirection * moveDistance;
+        
+        CanvasGroup titleCanvas = titleContainer.GetComponent<CanvasGroup>();
+        if (titleCanvas == null && fadeOut)
+        {
+            titleCanvas = titleContainer.AddComponent<CanvasGroup>();
+        }
+        
+        float elapsedTime = 0f;
+        
+        while (elapsedTime < animationDuration)
+        {
+            elapsedTime += Time.deltaTime;
+            float t = Mathf.Clamp01(elapsedTime / animationDuration);
+            
+            // Aplicar curva de movimiento
+            float curveValue = movementCurve.Evaluate(t);
+            titleRect.anchoredPosition = Vector2.Lerp(originalPosition, targetPosition, curveValue);
+            
+            // Fade out si está habilitado
+            if (fadeOut && titleCanvas != null)
+            {
+                float fadeValue = fadeCurve.Evaluate(t);
+                titleCanvas.alpha = fadeValue;
+            }
+            
+            // Scale down si está habilitado
+            if (scaleDown)
+            {
+                float scale = Mathf.Lerp(1f, minScale, t);
+                titleRect.localScale = Vector3.one * scale;
+            }
+            
+            yield return null;
+        }
+        
+        // Asegurar valores finales
+        titleRect.anchoredPosition = targetPosition;
+        if (fadeOut && titleCanvas != null)
+        {
+            titleCanvas.alpha = 0f;
+        }
+        if (scaleDown)
+        {
+            titleRect.localScale = Vector3.one * minScale;
         }
     }
     

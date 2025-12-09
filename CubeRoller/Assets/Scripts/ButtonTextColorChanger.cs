@@ -13,6 +13,11 @@ public class ButtonTextColorChanger : MonoBehaviour, IPointerEnterHandler, IPoin
     [Header("Configuración de Fade")]
     public float fadeDuration = 0.2f;
     
+    [Header("Configuración de Movimiento")]
+    public bool enableMovement = true;
+    public float moveUpDistance = 10f;
+    public float moveDuration = 0.2f;
+    
     [Header("Referencias (auto-detectar)")]
     public Text legacyText;
     public TextMeshProUGUI tmpText;
@@ -23,8 +28,16 @@ public class ButtonTextColorChanger : MonoBehaviour, IPointerEnterHandler, IPoin
     private float fadeTimer = 0f;
     private bool isFading = false;
     
+    private RectTransform rectTransform;
+    private Vector2 originalPosition;
+    private Vector2 targetPosition;
+    private float moveTimer = 0f;
+    private bool isMoving = false;
+    
     void Start()
     {
+        rectTransform = GetComponent<RectTransform>();
+        
         if (legacyText == null)
         {
             legacyText = GetComponentInChildren<Text>();
@@ -49,6 +62,21 @@ public class ButtonTextColorChanger : MonoBehaviour, IPointerEnterHandler, IPoin
         }
         
         targetColor = normalTextColor;
+        
+        // Capturar posición original después de que el layout group haya calculado posiciones
+        StartCoroutine(CaptureOriginalPositionAfterLayout());
+    }
+    
+    System.Collections.IEnumerator CaptureOriginalPositionAfterLayout()
+    {
+        // Esperar un frame para que el layout group calcule las posiciones
+        yield return null;
+        
+        if (rectTransform != null)
+        {
+            originalPosition = rectTransform.anchoredPosition;
+            targetPosition = originalPosition;
+        }
     }
     
     void Update()
@@ -70,16 +98,43 @@ public class ButtonTextColorChanger : MonoBehaviour, IPointerEnterHandler, IPoin
                 currentColor = targetColor;
             }
         }
+        
+        if (isMoving && enableMovement && rectTransform != null)
+        {
+            moveTimer += Time.deltaTime;
+            float t = Mathf.Clamp01(moveTimer / moveDuration);
+            
+            // Interpolación suave con ease-out
+            t = 1f - Mathf.Pow(1f - t, 2f);
+            
+            rectTransform.anchoredPosition = Vector2.Lerp(rectTransform.anchoredPosition, targetPosition, t);
+            
+            if (t >= 1f)
+            {
+                isMoving = false;
+                rectTransform.anchoredPosition = targetPosition;
+            }
+        }
     }
     
     public void OnPointerEnter(PointerEventData eventData)
     {
         StartFade(hoverTextColor);
+        
+        if (enableMovement && rectTransform != null)
+        {
+            StartMove(originalPosition + new Vector2(0, moveUpDistance));
+        }
     }
     
     public void OnPointerExit(PointerEventData eventData)
     {
         StartFade(normalTextColor);
+        
+        if (enableMovement && rectTransform != null)
+        {
+            StartMove(originalPosition);
+        }
     }
     
     private void StartFade(Color target)
@@ -87,6 +142,13 @@ public class ButtonTextColorChanger : MonoBehaviour, IPointerEnterHandler, IPoin
         targetColor = target;
         fadeTimer = 0f;
         isFading = true;
+    }
+    
+    private void StartMove(Vector2 target)
+    {
+        targetPosition = target;
+        moveTimer = 0f;
+        isMoving = true;
     }
     
     private void ApplyTextColor(Color color)
