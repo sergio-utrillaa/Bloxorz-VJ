@@ -31,7 +31,77 @@ public class SceneTransitionAnimator : MonoBehaviour
     public float minScale = 0.5f;
     public float delayBetweenElements = 0.05f;
     
+    [Header("Animación de Entrada")]
+    public bool playEntranceAnimation = true;
+    public float entranceDelay = 0.1f;
+    
     private bool isAnimating = false;
+    
+    // Clase auxiliar para almacenar información de elementos UI
+    private class UIElementData
+    {
+        public RectTransform rectTransform;
+        public Vector2 originalPosition;
+        public Vector3 originalScale;
+        public CanvasGroup canvasGroup;
+    }
+    
+    // Clase auxiliar para animación de entrada
+    private class EntranceElementData
+    {
+        public RectTransform rectTransform;
+        public Vector2 originalPosition;
+        public Vector3 originalScale;
+        public Vector2 direction;
+        public float delay;
+        public CanvasGroup canvasGroup;
+    }
+    
+    void Start()
+    {
+        if (playEntranceAnimation)
+        {
+            // Ocultar elementos inmediatamente antes del primer frame
+            HideElementsImmediately();
+            StartCoroutine(WaitForLayoutAndAnimate());
+        }
+    }
+    
+    void HideElementsImmediately()
+    {
+        // Ocultar título
+        if (titleContainer != null)
+        {
+            CanvasGroup titleCanvas = titleContainer.GetComponent<CanvasGroup>();
+            if (titleCanvas == null)
+            {
+                titleCanvas = titleContainer.AddComponent<CanvasGroup>();
+            }
+            titleCanvas.alpha = 0f;
+        }
+        
+        // Ocultar elementos de la lista
+        foreach (GameObject element in elementsToAnimate)
+        {
+            if (element == null) continue;
+            
+            CanvasGroup canvasGroup = element.GetComponent<CanvasGroup>();
+            if (canvasGroup == null)
+            {
+                canvasGroup = element.AddComponent<CanvasGroup>();
+            }
+            canvasGroup.alpha = 0f;
+        }
+    }
+    
+    IEnumerator WaitForLayoutAndAnimate()
+    {
+        // Esperar un frame para que el layout group calcule las posiciones
+        yield return null;
+        
+        // Ahora ejecutar la animación de entrada
+        StartCoroutine(PerformEntranceAnimation());
+    }
     
     public void AnimateAndLoadScene(string sceneName)
     {
@@ -106,6 +176,147 @@ public class SceneTransitionAnimator : MonoBehaviour
         SceneManager.LoadScene(sceneName);
     }
     
+    IEnumerator PerformEntranceAnimation()
+    {
+        // Normalizar direcciones
+        elementsExitDirection.Normalize();
+        alternateDirection.Normalize();
+        titleExitDirection.Normalize();
+        
+        // Preparar elementos para entrada
+        List<EntranceElementData> entranceElements = new List<EntranceElementData>();
+        
+        // Preparar título
+        if (titleContainer != null)
+        {
+            RectTransform titleRect = titleContainer.GetComponent<RectTransform>();
+            if (titleRect != null)
+            {
+                EntranceElementData titleData = new EntranceElementData();
+                titleData.rectTransform = titleRect;
+                titleData.originalPosition = titleRect.anchoredPosition;
+                titleData.originalScale = titleRect.localScale;
+                titleData.direction = -titleExitDirection; // Dirección opuesta para entrada
+                titleData.delay = 0f;
+                
+                // Preparar CanvasGroup
+                titleData.canvasGroup = titleContainer.GetComponent<CanvasGroup>();
+                if (titleData.canvasGroup == null && fadeOut)
+                {
+                    titleData.canvasGroup = titleContainer.AddComponent<CanvasGroup>();
+                }
+                
+                // Posicionar fuera de pantalla
+                titleRect.anchoredPosition = titleData.originalPosition + titleExitDirection * moveDistance;
+                if (fadeOut && titleData.canvasGroup != null)
+                {
+                    titleData.canvasGroup.alpha = 0f;
+                }
+                if (scaleDown)
+                {
+                    titleRect.localScale = titleData.originalScale * minScale;
+                }
+                
+                entranceElements.Add(titleData);
+            }
+        }
+        
+        // Preparar elementos de la lista
+        for (int i = 0; i < elementsToAnimate.Count; i++)
+        {
+            if (elementsToAnimate[i] == null) continue;
+            
+            RectTransform rectTransform = elementsToAnimate[i].GetComponent<RectTransform>();
+            if (rectTransform == null) continue;
+            
+            EntranceElementData elementData = new EntranceElementData();
+            elementData.rectTransform = rectTransform;
+            elementData.originalPosition = rectTransform.anchoredPosition;
+            elementData.originalScale = rectTransform.localScale;
+            
+            // Dirección opuesta para entrada
+            Vector2 exitDir = alternateDirections && (i % 2 == 1) ? alternateDirection : elementsExitDirection;
+            elementData.direction = -exitDir;
+            elementData.delay = entranceDelay + (i * delayBetweenElements);
+            
+            // Preparar CanvasGroup
+            elementData.canvasGroup = elementsToAnimate[i].GetComponent<CanvasGroup>();
+            if (elementData.canvasGroup == null && fadeOut)
+            {
+                elementData.canvasGroup = elementsToAnimate[i].AddComponent<CanvasGroup>();
+            }
+            
+            // Posicionar fuera de pantalla
+            rectTransform.anchoredPosition = elementData.originalPosition + exitDir * moveDistance;
+            if (fadeOut && elementData.canvasGroup != null)
+            {
+                elementData.canvasGroup.alpha = 0f;
+            }
+            if (scaleDown)
+            {
+                rectTransform.localScale = elementData.originalScale * minScale;
+            }
+            
+            entranceElements.Add(elementData);
+        }
+        
+        // Animar entrada de todos los elementos
+        foreach (var element in entranceElements)
+        {
+            StartCoroutine(AnimateEntrance(element));
+        }
+        
+        yield return null;
+    }
+    
+    IEnumerator AnimateEntrance(EntranceElementData data)
+    {
+        // Esperar el delay inicial
+        yield return new WaitForSeconds(data.delay);
+        
+        Vector2 startPosition = data.rectTransform.anchoredPosition;
+        Vector3 startScale = data.rectTransform.localScale;
+        
+        float elapsedTime = 0f;
+        
+        while (elapsedTime < animationDuration)
+        {
+            elapsedTime += Time.deltaTime;
+            float t = Mathf.Clamp01(elapsedTime / animationDuration);
+            
+            // Aplicar curva de movimiento
+            float curveValue = movementCurve.Evaluate(t);
+            data.rectTransform.anchoredPosition = Vector2.Lerp(startPosition, data.originalPosition, curveValue);
+            
+            // Fade in si está habilitado
+            if (fadeOut && data.canvasGroup != null)
+            {
+                float fadeValue = fadeCurve.Evaluate(1f - t); // Invertido para fade in
+                data.canvasGroup.alpha = 1f - fadeValue;
+            }
+            
+            // Scale up si está habilitado
+            if (scaleDown)
+            {
+                float scale = Mathf.Lerp(minScale, 1f, t);
+                data.rectTransform.localScale = data.originalScale * scale;
+            }
+            
+            yield return null;
+        }
+        
+        // Asegurar valores finales
+        data.rectTransform.anchoredPosition = data.originalPosition;
+        if (fadeOut && data.canvasGroup != null)
+        {
+            data.canvasGroup.alpha = 1f;
+        }
+        if (scaleDown)
+        {
+            data.rectTransform.localScale = data.originalScale;
+        }
+    }
+    
     IEnumerator AnimateElement(RectTransform rectTransform, Vector2 direction, float delay, CanvasGroup canvasGroup = null)
     {
         // Esperar el delay inicial
@@ -153,14 +364,5 @@ public class SceneTransitionAnimator : MonoBehaviour
         {
             rectTransform.localScale = originalScale * minScale;
         }
-    }
-    
-    // Clase auxiliar para almacenar información de elementos UI
-    private class UIElementData
-    {
-        public RectTransform rectTransform;
-        public Vector2 originalPosition;
-        public Vector3 originalScale;
-        public CanvasGroup canvasGroup;
     }
 }
