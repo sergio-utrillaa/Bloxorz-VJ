@@ -45,6 +45,13 @@ public class MapCreation : MonoBehaviour
         Time.timeScale = 1.0f;   // 20% de velocidad → cámara lenta
         CreateMap();
         FindAllBridges();
+
+        //Crear UI del contador si no existe
+        if (FindObjectOfType<MoveCounterUI>() == null)
+        {
+            GameObject uiObj = new GameObject("MoveCounterUI");
+            uiObj.AddComponent<MoveCounterUI>();
+        }
     }
     
     // Update is called once per frame
@@ -96,13 +103,39 @@ public class MapCreation : MonoBehaviour
 		cubeSpawned = false;
 		float maxDelay = 0f;
 		
+		// First pass: find spawn positions for split cubes
+		Vector3 cube1SpawnPos = Vector3.zero;
+		Vector3 cube2SpawnPos = Vector3.zero;
+		bool foundCube1Pos = false;
+		bool foundCube2Pos = false;
+		
+		for(int z=0; z<sizeZ; z++)
+		{
+		    for(int x=0; x<sizeX; x++)
+		    {
+		        int tileValue = nums[z * sizeX + x + 2];
+		        int xFlipped = (sizeX - 1) - x;
+		        
+		        if (tileValue == 8)  // Position for small cube 1
+		        {
+		            cube1SpawnPos = new Vector3(xFlipped, 0.5f, z);
+		            foundCube1Pos = true;
+		        }
+		        else if (tileValue == 9)  // Position for small cube 2
+		        {
+		            cube2SpawnPos = new Vector3(xFlipped, 0.5f, z);
+		            foundCube2Pos = true;
+		        }
+		    }
+		}
+		
 		// Process the map. For each tileId == 2 create a copy of the tile prefab
         for(int z=0; z<sizeZ; z++)
             for(int x=0; x<sizeX; x++)
             {
                 int tileValue = nums[z * sizeX + x + 2];
                 
-                if (tileValue == 2 || tileValue == 4 ||  tileValue == 5 ||  tileValue == 6)
+                if (tileValue == 2 || tileValue == 4 ||  tileValue == 5 ||  (tileValue >= 6 && tileValue <= 69))
                 {
                     int xFlipped = (sizeX - 1) - x;   // <--- volteo horizontal
 
@@ -159,14 +192,24 @@ public class MapCreation : MonoBehaviour
                         TileAnimation botonCruzAnim = botonCruz.AddComponent<TileAnimation>();
                         botonCruzAnim.StartAnimation(delay, tileAnimationDuration, tileStartHeight + 0.05f);
                     }
-                    else if (tileValue == 6 && botonDivisorPrefab != null) // Si es un 6, crear el botón divisor encima del tile
+                    else if (tileValue == 6 && botonDivisorPrefab != null)
                     {
-                        // Crear el botón cruz a la altura final del tile (0.0f) con rotación de 45 grados
+                        // Crear el botón divisor a la altura final del tile (0.0f)
                         GameObject botonDivisor = Instantiate(botonDivisorPrefab, 
                             new Vector3(xFlipped, 0.0f, z),  // Altura final sobre el tile
-                            Quaternion.identity); // Rotar 45 grados en el eje Y
+                            Quaternion.identity);
                         botonDivisor.transform.parent = transform;
                         botonDivisor.name = $"BotonDivisor_{x}_{z}";
+                        
+                        // Configurar las posiciones de spawn de los cubos
+                        BotonDivisor botonScript = botonDivisor.GetComponent<BotonDivisor>();
+                        if (botonScript != null)
+                        {
+                            botonScript.smallCube1Position = cube1SpawnPos;
+                            botonScript.smallCube2Position = cube2SpawnPos;
+                            Debug.Log($"Botón divisor configurado: Cubo1 en {cube1SpawnPos}, Cubo2 en {cube2SpawnPos}");
+                        }
+                        
                         // Añadir el botón a la lista también
                         allTiles.Add(botonDivisor);
                         
@@ -197,35 +240,27 @@ public class MapCreation : MonoBehaviour
                     
                     Debug.Log($"Tile naranja creado en posición: ({xFlipped}, {z})");
                 }
-                else if (tileValue == 3) // Tile de meta (visible, no invisible)
+                else if (tileValue == 3) // Tile de meta (invisible - simula un agujero)
                 {
                     int xFlipped = (sizeX - 1) - x;
                     
-                    // Crear el tile de meta VISIBLE (como un tile normal pero especial)
+                    // Crear el tile de meta INVISIBLE (solo collider para detectar llegada)
                     GameObject goalTile = Instantiate(tile, new Vector3(xFlipped, -0.05f, z), transform.rotation);
                     goalTile.transform.parent = transform;
                     goalTile.name = $"GoalTile_{x}_{z}";
                     goalTile.tag = "Goal"; // Importante: asignar tag Goal
                     
-                    // Opcional: cambiar material para distinguir visualmente
+                    // Hacer el tile invisible
                     Renderer renderer = goalTile.GetComponent<Renderer>();
                     if (renderer != null)
                     {
-                        // Aquí puedes asignar un material diferente si tienes uno
-                        // renderer.material = goalTileMaterial;
+                        renderer.enabled = false; // Desactivar el renderer para hacerlo invisible
                     }
                     
-                    // Añadir el tile de meta a la lista
-                    allTiles.Add(goalTile);
+                    // NO añadir el tile de meta a la lista de tiles para que no se anime ni caiga
+                    // allTiles.Add(goalTile); 
                     
-                    // Animar el tile de meta como cualquier otro tile
-                    TileAnimation tileAnim = goalTile.AddComponent<TileAnimation>();
-                    float delay = (x + z) * delayBetweenTiles;
-                    if (delay > maxDelay)
-                        maxDelay = delay;
-                    tileAnim.StartAnimation(delay, tileAnimationDuration, tileStartHeight);
-                    
-                    Debug.Log($"Tile de meta creado en posición: ({xFlipped}, {z})");
+                    Debug.Log($"Tile de meta (invisible) creado en posición: ({xFlipped}, {z})");
                 }
             }
       
@@ -349,6 +384,8 @@ public class MapCreation : MonoBehaviour
         
         // Esperar a que termine la animación de caída
         yield return new WaitForSeconds(maxFallDelay + tileFallAnimationDuration + 0.1f);
+
+        MoveCounter.Instance.RestartLevel();
         
         // Reiniciar la escena
         Debug.Log("Reiniciando escena...");
@@ -388,6 +425,8 @@ public class MapCreation : MonoBehaviour
     // Nuevo método para avanzar al siguiente nivel
     public void GoToNextLevel()
     {
+        MoveCounter.Instance.CompleteLevel();
+
         // Determinar el siguiente nivel
         string currentSceneName = SceneManager.GetActiveScene().name;
         string nextSceneName = GetNextLevelName(currentSceneName);

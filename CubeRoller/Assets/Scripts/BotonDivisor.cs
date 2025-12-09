@@ -5,12 +5,10 @@ using UnityEngine;
 public class BotonDivisor : MonoBehaviour
 {
     public bool isPressed = false;
-    /* private bool hasTriggered = false;
-    private float lastTriggerTime = 0f;
-    private float triggerDelay = 0.2f; */
     
-    public Vector3 smallCube1SpawnOffset = new Vector3(-2, 0, 0);  // Offset relativo para el primer cubo
-    public Vector3 smallCube2SpawnOffset = new Vector3(2, 0, 0);   // Offset relativo para el segundo cubo
+    // Posiciones absolutas donde aparecerán los cubos pequeños (configuradas desde MapCreation)
+    public Vector3 smallCube1Position;
+    public Vector3 smallCube2Position;
     
     public GameObject efectoDestello;
     public Color colorActivacion = Color.yellow;
@@ -86,9 +84,9 @@ public class BotonDivisor : MonoBehaviour
         CubeManager manager = CubeManager.Instance;
         if (manager != null && !manager.IsSplit())
         {
-            // Calcular posiciones absolutas para los cubos pequeños
-            Vector3 pos1 = cubePosition + smallCube1SpawnOffset;
-            Vector3 pos2 = cubePosition + smallCube2SpawnOffset;
+            // Usar las posiciones configuradas desde MapCreation
+            Vector3 pos1 = smallCube1Position;
+            Vector3 pos2 = smallCube2Position;
             
             // Ajustar altura para que estén sobre el suelo
             pos1.y = 0.5f;
