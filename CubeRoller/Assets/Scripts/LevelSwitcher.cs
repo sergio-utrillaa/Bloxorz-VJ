@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Rendering;
 
 public class LevelSwitcher : MonoBehaviour
 {
@@ -12,10 +13,35 @@ public class LevelSwitcher : MonoBehaviour
         {
             instance = this;
             DontDestroyOnLoad(gameObject);
+            
+            // Suscribirse al evento de carga de escena
+            SceneManager.sceneLoaded += OnSceneLoaded;
         }
         else
         {
             Destroy(gameObject);
+        }
+    }
+    
+    void OnDestroy()
+    {
+        // Desuscribirse del evento
+        if (instance == this)
+        {
+            SceneManager.sceneLoaded -= OnSceneLoaded;
+        }
+    }
+    
+    // Llamado cuando se carga una nueva escena
+    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        // Forzar actualización de la iluminación
+        DynamicGI.UpdateEnvironment();
+        
+        // Resetear configuración de render
+        if (RenderSettings.skybox != null)
+        {
+            RenderSettings.skybox.SetFloat("_Exposure", 1f);
         }
     }
     
@@ -118,12 +144,19 @@ public class LevelSwitcher : MonoBehaviour
             // Opcional: Resetear el contador de movimientos al cambiar de nivel manualmente
             // MoveCounter.Instance.ResetAllProgress();
             
-            SceneManager.LoadScene(levelName);
+            // Cargar la escena de forma única (descargar escena anterior completamente)
+            SceneManager.LoadScene(levelName, LoadSceneMode.Single);
         }
         else
         {
             Debug.LogWarning($"El nivel {levelName} no existe o no está añadido en Build Settings.");
         }
+    }
+    
+    // Método público para llamar desde botones de UI
+    public void StartLevel1()
+    {
+        LoadLevel(1);
     }
     
     bool LevelExists(string levelName)
