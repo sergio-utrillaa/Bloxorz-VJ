@@ -44,7 +44,12 @@ public class CubeManager : MonoBehaviour
         // Switch between cubes with Space key
         if (isSplit && Input.GetKeyDown(KeyCode.Space))
         {
-            SwitchControlledCube();
+            // Only allow switching if the current cube is not moving
+            MoveCubeSmall currentMoveScript = activeControlledCube?.GetComponent<MoveCubeSmall>();
+            if (currentMoveScript != null && !currentMoveScript.IsMoving())
+            {
+                SwitchControlledCube();
+            }
         }
         
         // Check for merge when split
