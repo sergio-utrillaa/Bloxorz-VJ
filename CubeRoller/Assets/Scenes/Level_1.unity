@@ -182,6 +182,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7096695086117136735, guid: 2024f3efc1a3b214493fe8734ced46be,
         type: 3}
+      propertyPath: rotSpeed
+      value: 360
+      objectReference: {fileID: 0}
+    - target: {fileID: 7096695086117136735, guid: 2024f3efc1a3b214493fe8734ced46be,
+        type: 3}
       propertyPath: fallRotSpeed
       value: 360
       objectReference: {fileID: 0}
@@ -886,6 +891,7 @@ MonoBehaviour:
   tileFallAnimationDuration: 0.3
   tileFallStartHeight: -10
   delayBetweenFallTiles: 0.03
+  fadeOutDurationOnFall: 0.8
   tileRiseAnimationDuration: 1
   tileRiseHeight: 7
   delayBetweenRiseTiles: 0.02

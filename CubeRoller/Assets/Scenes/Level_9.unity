@@ -226,6 +226,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7096695086117136735, guid: 2024f3efc1a3b214493fe8734ced46be,
         type: 3}
+      propertyPath: rotSpeed
+      value: 360
+      objectReference: {fileID: 0}
+    - target: {fileID: 7096695086117136735, guid: 2024f3efc1a3b214493fe8734ced46be,
+        type: 3}
       propertyPath: fallRotSpeed
       value: 360
       objectReference: {fileID: 0}
@@ -734,12 +739,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &909254909 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 7464432532695562115, guid: 5d1d5062536989244a2c2c706ea31f17,
-    type: 3}
-  m_PrefabInstance: {fileID: 667878374}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1022743896
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -942,6 +941,11 @@ MonoBehaviour:
   tileFallAnimationDuration: 0.3
   tileFallStartHeight: -10
   delayBetweenFallTiles: 0.03
+  fadeOutDurationOnFall: 0.8
+  tileRiseAnimationDuration: 1
+  tileRiseHeight: 15
+  delayBetweenRiseTiles: 0.02
+  fadeOutDuration: 1
 --- !u!114 &1325002401
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -954,16 +958,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 05ae877053357b34ea64432685cd7be9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  puentesManuales:
-  - {fileID: 909254909}
-  puentesManualesCruz:
-  - {fileID: 1532277743}
---- !u!1 &1532277743 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 7464432532695562115, guid: 5d1d5062536989244a2c2c706ea31f17,
-    type: 3}
-  m_PrefabInstance: {fileID: 1022743896}
-  m_PrefabAsset: {fileID: 0}
+  configuracionBotones: []
+  toleranciaPosicion: 0.5
 --- !u!1 &1926290601 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 9114210099325290405, guid: 2024f3efc1a3b214493fe8734ced46be,

@@ -6,14 +6,17 @@ public class MoveCubeSmall : MonoBehaviour
 {
     bool bMoving = false;
     bool bFalling = false;
+    bool bCooldown = false;         // ✨ NUEVO: Está en pausa después de un movimiento?
     
-    public float rotSpeed = 240f;
+    public float rotSpeed = 360.0f;
     public float fallSpeed = 10f;             // Maximum fall speed
     public float fallAcceleration = 9.8f;     // Acceleration of falling (like gravity)
     public float fallRotSpeed = 360f;         // Rotation speed while falling
+    public float movementCooldown = 0.15f;     // ✨ NUEVO: Pausa después de cada movimiento (en segundos)
     
     private float currentFallSpeed;           // Current fall speed (starts at 0, accelerates)
     private bool hasFallen = false;           // Flag to prevent multiple fall notifications
+    private float cooldownTimer = 0f;         // ✨ NUEVO: Temporizador para el cooldown
     
     Vector3 rotPoint, rotAxis;
     float rotRemainder;
@@ -47,6 +50,27 @@ public class MoveCubeSmall : MonoBehaviour
     
     void Update()
     {
+        // ✨ NUEVO: Gestionar el cooldown (cancelar si no está en el suelo)
+        if (bCooldown)
+        {
+            // Si el cubo no está en el suelo, cancelar el cooldown inmediatamente
+            if (!isGrounded())
+            {
+                bCooldown = false;
+                cooldownTimer = 0f;
+            }
+            else
+            {
+                cooldownTimer -= Time.deltaTime;
+                if (cooldownTimer <= 0f)
+                {
+                    bCooldown = false;
+                    cooldownTimer = 0f;
+                }
+                return; // No permitir input durante el cooldown
+            }
+        }
+
         if (bFalling)
         {
             // Acelerar la caída hasta alcanzar la velocidad máxima
@@ -103,6 +127,10 @@ public class MoveCubeSmall : MonoBehaviour
             {
                 transform.RotateAround(rotPoint, rotAxis, rotRemainder * rotDir);
                 bMoving = false;
+                
+                // ✨ NUEVO: Iniciar cooldown después de completar el movimiento
+                bCooldown = true;
+                cooldownTimer = movementCooldown;
             }
             else
             {
@@ -116,6 +144,10 @@ public class MoveCubeSmall : MonoBehaviour
             {
                 bFalling = true;
                 currentFallSpeed = fallSpeed;  // Iniciar velocidad de caída en 0
+                
+                // ✨ NUEVO: Cancelar cooldown si empieza a caer
+                bCooldown = false;
+                cooldownTimer = 0f;
                 
                 // Configurar rotación de caída según la última dirección de movimiento
                 SetupFallRotation();
