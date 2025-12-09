@@ -135,7 +135,7 @@ public class MapCreation : MonoBehaviour
             {
                 int tileValue = nums[z * sizeX + x + 2];
                 
-                if (tileValue == 2 || tileValue == 4 ||  tileValue == 5 ||  (tileValue == 6))
+                if (tileValue == 2 || tileValue == 4 ||  tileValue == 5 ||  (tileValue == 6) || tileValue == 8 || tileValue == 9)
                 {
                     int xFlipped = (sizeX - 1) - x;   // <--- volteo horizontal
 

@@ -28,7 +28,7 @@ Transform:
   m_GameObject: {fileID: 616212681115259612}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: -1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -118,7 +118,7 @@ GameObject:
   - component: {fileID: 4615613471545786741}
   - component: {fileID: 5852949706002103140}
   m_Layer: 3
-  m_Name: Puente
+  m_Name: PuenteVert
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

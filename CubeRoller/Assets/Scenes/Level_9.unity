@@ -122,6 +122,50 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &92658009
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 92658011}
+  - component: {fileID: 92658010}
+  m_Layer: 0
+  m_Name: LevelSwitcher
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &92658010
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 92658009}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f4692998b8c6404a95084fdf97834f3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &92658011
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 92658009}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 10.337804, y: 4.5674677, z: 12.994644}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &205670638
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -833,12 +877,13 @@ MonoBehaviour:
   map: {fileID: 4900000, guid: 6d459255bb0328a4ca3e9f8e01c795a8, type: 3}
   tile: {fileID: 7189405941443868808, guid: e50dcff8f139adb4bb9392b89156f777, type: 3}
   cube: {fileID: 1926290601}
-  cubePosition: {x: 21, y: 1, z: 5}
+  cubePosition: {x: 21, y: 1, z: 6}
   botonRedondoPrefab: {fileID: 3797884833960337822, guid: 4e526773936265d479275f1f32c29836,
     type: 3}
   botonCruzPrefab: {fileID: 7487532029930725775, guid: de65c9a08b4c24c4d931350a34b12f3e,
     type: 3}
-  botonDivisorPrefab: {fileID: 0}
+  botonDivisorPrefab: {fileID: 3797884833960337822, guid: 78278cf221239bf468d732618b658aa1,
+    type: 3}
   tileNaranjaPrefab: {fileID: 0}
   tileAnimationDuration: 0.5
   tileStartHeight: -10
@@ -919,3 +964,4 @@ SceneRoots:
   - {fileID: 1325002399}
   - {fileID: 205670638}
   - {fileID: 1946183870}
+  - {fileID: 92658011}

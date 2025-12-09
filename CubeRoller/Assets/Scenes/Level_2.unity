@@ -610,6 +610,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5852949706002103140, guid: 5d1d5062536989244a2c2c706ea31f17,
+        type: 3}
+      propertyPath: m_IsTrigger
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7464432532695562115, guid: 5d1d5062536989244a2c2c706ea31f17,
         type: 3}
       propertyPath: m_Name
@@ -754,6 +759,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5852949706002103140, guid: 5d1d5062536989244a2c2c706ea31f17,
+        type: 3}
+      propertyPath: m_IsTrigger
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7464432532695562115, guid: 5d1d5062536989244a2c2c706ea31f17,
         type: 3}
       propertyPath: m_Name
@@ -833,7 +843,7 @@ MonoBehaviour:
   map: {fileID: 4900000, guid: 6582e585817bb8c4ab3e4fc2a17adbcd, type: 3}
   tile: {fileID: 7189405941443868808, guid: e50dcff8f139adb4bb9392b89156f777, type: 3}
   cube: {fileID: 1926290601}
-  cubePosition: {x: 21, y: 1, z: 5}
+  cubePosition: {x: 21, y: 1, z: 8}
   botonRedondoPrefab: {fileID: 3797884833960337822, guid: 4e526773936265d479275f1f32c29836,
     type: 3}
   botonCruzPrefab: {fileID: 7487532029930725775, guid: de65c9a08b4c24c4d931350a34b12f3e,

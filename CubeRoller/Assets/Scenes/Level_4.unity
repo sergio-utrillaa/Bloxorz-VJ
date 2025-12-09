@@ -122,6 +122,50 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &87357487
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 87357489}
+  - component: {fileID: 87357488}
+  m_Layer: 0
+  m_Name: LevelSwitcher
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &87357488
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 87357487}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f4692998b8c6404a95084fdf97834f3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &87357489
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 87357487}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 10.337804, y: 4.5674677, z: 12.994644}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &205670638
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -648,7 +692,7 @@ MonoBehaviour:
   map: {fileID: 4900000, guid: e3b400230a78aa0468c958ca5f188b24, type: 3}
   tile: {fileID: 7189405941443868808, guid: e50dcff8f139adb4bb9392b89156f777, type: 3}
   cube: {fileID: 1926290601}
-  cubePosition: {x: 21, y: 1, z: 5}
+  cubePosition: {x: 20, y: 1, z: 7}
   botonRedondoPrefab: {fileID: 3797884833960337822, guid: 4e526773936265d479275f1f32c29836,
     type: 3}
   botonCruzPrefab: {fileID: 0}
@@ -678,3 +722,4 @@ SceneRoots:
   - {fileID: 832575519}
   - {fileID: 1325002399}
   - {fileID: 205670638}
+  - {fileID: 87357489}
