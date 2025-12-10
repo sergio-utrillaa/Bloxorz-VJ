@@ -1183,7 +1183,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animationDuration: 0.5
-  moveDistance: 2000
+  moveDistance: 200
   movementCurve:
     serializedVersion: 2
     m_Curve:

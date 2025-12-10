@@ -33,10 +33,13 @@ public class ButtonTextColorChanger : MonoBehaviour, IPointerEnterHandler, IPoin
     private Vector2 targetPosition;
     private float moveTimer = 0f;
     private bool isMoving = false;
+    private bool positionCaptured = false;
+    private SceneTransitionAnimator sceneAnimator;
     
     void Start()
     {
         rectTransform = GetComponent<RectTransform>();
+        sceneAnimator = FindObjectOfType<SceneTransitionAnimator>();
         
         if (legacyText == null)
         {
@@ -72,10 +75,20 @@ public class ButtonTextColorChanger : MonoBehaviour, IPointerEnterHandler, IPoin
         // Esperar un frame para que el layout group calcule las posiciones
         yield return null;
         
+        // Esperar a que la animación de entrada termine si existe
+        if (sceneAnimator != null && sceneAnimator.playEntranceAnimation)
+        {
+            while (!sceneAnimator.IsEntranceAnimationComplete)
+            {
+                yield return null;
+            }
+        }
+        
         if (rectTransform != null)
         {
             originalPosition = rectTransform.anchoredPosition;
             targetPosition = originalPosition;
+            positionCaptured = true;
         }
     }
     
@@ -121,7 +134,7 @@ public class ButtonTextColorChanger : MonoBehaviour, IPointerEnterHandler, IPoin
     {
         StartFade(hoverTextColor);
         
-        if (enableMovement && rectTransform != null)
+        if (enableMovement && rectTransform != null && positionCaptured)
         {
             StartMove(originalPosition + new Vector2(0, moveUpDistance));
         }
@@ -131,7 +144,7 @@ public class ButtonTextColorChanger : MonoBehaviour, IPointerEnterHandler, IPoin
     {
         StartFade(normalTextColor);
         
-        if (enableMovement && rectTransform != null)
+        if (enableMovement && rectTransform != null && positionCaptured)
         {
             StartMove(originalPosition);
         }

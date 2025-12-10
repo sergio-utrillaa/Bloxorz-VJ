@@ -1000,7 +1000,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animationDuration: 0.5
-  moveDistance: 2000
+  moveDistance: 200
   movementCurve:
     serializedVersion: 2
     m_Curve:
@@ -1064,7 +1064,7 @@ MonoBehaviour:
   minScale: 0.5
   delayBetweenElements: 0.05
   playEntranceAnimation: 1
-  entranceDelay: 0
+  entranceDelay: 0.1
 --- !u!4 &1214318693
 Transform:
   m_ObjectHideFlags: 0

@@ -36,6 +36,9 @@ public class SceneTransitionAnimator : MonoBehaviour
     public float entranceDelay = 0.1f;
     
     private bool isAnimating = false;
+    private bool entranceAnimationComplete = false;
+    
+    public bool IsEntranceAnimationComplete => entranceAnimationComplete;
     
     // Clase auxiliar para almacenar información de elementos UI
     private class UIElementData
@@ -266,7 +269,12 @@ public class SceneTransitionAnimator : MonoBehaviour
             StartCoroutine(AnimateEntrance(element));
         }
         
-        yield return null;
+        // Esperar a que todas las animaciones terminen
+        float totalEntranceTime = animationDuration + entranceDelay + (elementsToAnimate.Count * delayBetweenElements);
+        yield return new WaitForSeconds(totalEntranceTime + 0.1f);
+        
+        // Marcar que la animación de entrada ha terminado
+        entranceAnimationComplete = true;
     }
     
     IEnumerator AnimateEntrance(EntranceElementData data)
@@ -291,8 +299,8 @@ public class SceneTransitionAnimator : MonoBehaviour
             // Fade in si está habilitado
             if (fadeOut && data.canvasGroup != null)
             {
-                float fadeValue = fadeCurve.Evaluate(1f - t); // Invertido para fade in
-                data.canvasGroup.alpha = 1f - fadeValue;
+                // Para fade in, simplemente interpolamos de 0 a 1
+                data.canvasGroup.alpha = Mathf.Lerp(0f, 1f, curveValue);
             }
             
             // Scale up si está habilitado
