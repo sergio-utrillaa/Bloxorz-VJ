@@ -48,6 +48,8 @@ public class MoveCube : MonoBehaviour
 
     public AudioClip[] sounds; 		// Sounds to play when the cube rotates
     public AudioClip fallSound; 	// Sound to play when the cube starts falling
+    public AudioClip goalSound;     // Sonido al llegar a la meta
+
 
     enum CubeState { Vertical, HorizontalX, HorizontalZ }
     CubeState state = CubeState.Vertical;
@@ -323,6 +325,11 @@ public class MoveCube : MonoBehaviour
         {
             isGoalAnimationActive = true;
             bMoving = false; // Bloquear movimiento
+
+            if (goalSound != null)
+            {
+                AudioSource.PlayClipAtPoint(goalSound, transform.position, 1.5f);
+            }
             
             // Añadir componente de animación de meta
             GoalAnimation goalAnim = gameObject.AddComponent<GoalAnimation>();

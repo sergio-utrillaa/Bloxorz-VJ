@@ -125,8 +125,6 @@ MonoBehaviour:
   edgeRotationAngle: 90
   movementCooldown: 0.1
   sounds:
-  - {fileID: 8300000, guid: 2b4430ab3b1fe604180fb7133f9b3634, type: 3}
-  - {fileID: 8300000, guid: 4095d44fbe35bcf48b6aca0f5be89d2b, type: 3}
-  - {fileID: 8300000, guid: 10b7f35470b5aa44d9e37642cd1fa8a7, type: 3}
-  - {fileID: 8300000, guid: 4777373ff62c7a941b137ea300501eeb, type: 3}
-  fallSound: {fileID: 8300000, guid: d8c1fb97941c38f459178cf392a93923, type: 3}
+  - {fileID: 8300000, guid: f958259140e2a5f4dbb92373828b6c3c, type: 3}
+  fallSound: {fileID: 0}
+  goalSound: {fileID: 8300000, guid: a04b6bfaed91a87489c93a2cd5a4aa9c, type: 3}

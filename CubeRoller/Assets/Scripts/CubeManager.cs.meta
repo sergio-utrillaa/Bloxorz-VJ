@@ -3,7 +3,11 @@ guid: f18cf2c4be037ad4894e37bf89d2c4c7
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - mainCubePrefab: {instanceID: 0}
+  - smallCubePrefab: {instanceID: 0}
+  - splitSound: {fileID: 8300000, guid: cad0db1e7a2b8e34099937e3a36ed95e, type: 3}
+  - mergeSound: {fileID: 8300000, guid: 0b3cec5415d138c4dad3dad7f1fef35c, type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

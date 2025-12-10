@@ -20,6 +20,13 @@ public class BotonCruz : MonoBehaviour
     public Color colorActivacion = Color.blue; // Color diferente para distinguir de BotonRedondo
     public Color colorDesactivacion = Color.red;
     
+    // Sonidos
+    public AudioClip buttonPressSound;
+    public AudioClip bridgeActivateSound;   // ✨ NUEVO: Sonido al activar puente
+    public AudioClip bridgeDeactivateSound; // ✨ NUEVO: Sonido al desactivar puente
+    public float soundVolume = 1.0f;
+    public float bridgeSoundVolume = 1.0f;  // ✨ NUEVO: Volumen para sonidos de puente
+    
     void Start()
     {
         // Esperar un frame para que la animación de tile establezca la posición final
@@ -111,6 +118,13 @@ public class BotonCruz : MonoBehaviour
     void PressButton()
     {
         isPressed = true;
+        
+        // ✨ NUEVO: Reproducir sonido al presionar (solo cuando está en vertical)
+        if (buttonPressSound != null)
+        {
+            AudioSource.PlayClipAtPoint(buttonPressSound, transform.position, soundVolume);
+        }
+        
         Debug.Log("Botón cruz presionado!");
     }
     
@@ -133,6 +147,16 @@ public class BotonCruz : MonoBehaviour
         {
             Debug.LogWarning("No hay puentes controlados asignados al botón cruz");
             return;
+        }
+        
+        // ✨ NUEVO: Reproducir sonido de activación/desactivación de puente
+        if (activo && bridgeActivateSound != null)
+        {
+            AudioSource.PlayClipAtPoint(bridgeActivateSound, transform.position, bridgeSoundVolume);
+        }
+        else if (!activo && bridgeDeactivateSound != null)
+        {
+            AudioSource.PlayClipAtPoint(bridgeDeactivateSound, transform.position, bridgeSoundVolume);
         }
         
         foreach (GameObject puente in puentesControlados)

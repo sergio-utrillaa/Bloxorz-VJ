@@ -123,5 +123,6 @@ MonoBehaviour:
   fallAcceleration: 9.8
   fallRotSpeed: 360
   movementCooldown: 0.15
-  sounds: []
+  sounds:
+  - {fileID: 8300000, guid: f958259140e2a5f4dbb92373828b6c3c, type: 3}
   fallSound: {fileID: 0}

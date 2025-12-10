@@ -187,8 +187,58 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7096695086117136735, guid: 2024f3efc1a3b214493fe8734ced46be,
         type: 3}
+      propertyPath: basePitch
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7096695086117136735, guid: 2024f3efc1a3b214493fe8734ced46be,
+        type: 3}
+      propertyPath: fallSound
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 7096695086117136735, guid: 2024f3efc1a3b214493fe8734ced46be,
+        type: 3}
+      propertyPath: goalSound
+      value: 
+      objectReference: {fileID: 8300000, guid: a04b6bfaed91a87489c93a2cd5a4aa9c, type: 3}
+    - target: {fileID: 7096695086117136735, guid: 2024f3efc1a3b214493fe8734ced46be,
+        type: 3}
       propertyPath: fallRotSpeed
       value: 360
+      objectReference: {fileID: 0}
+    - target: {fileID: 7096695086117136735, guid: 2024f3efc1a3b214493fe8734ced46be,
+        type: 3}
+      propertyPath: sounds.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7096695086117136735, guid: 2024f3efc1a3b214493fe8734ced46be,
+        type: 3}
+      propertyPath: pitchVariationRange
+      value: 0.01
+      objectReference: {fileID: 0}
+    - target: {fileID: 7096695086117136735, guid: 2024f3efc1a3b214493fe8734ced46be,
+        type: 3}
+      propertyPath: sounds.Array.data[0]
+      value: 
+      objectReference: {fileID: 8300000, guid: f958259140e2a5f4dbb92373828b6c3c, type: 3}
+    - target: {fileID: 7096695086117136735, guid: 2024f3efc1a3b214493fe8734ced46be,
+        type: 3}
+      propertyPath: sounds.Array.data[1]
+      value: 
+      objectReference: {fileID: 8300000, guid: 6c9d9cf5668bb9842997b62c45b46daf, type: 3}
+    - target: {fileID: 7096695086117136735, guid: 2024f3efc1a3b214493fe8734ced46be,
+        type: 3}
+      propertyPath: sounds.Array.data[2]
+      value: 
+      objectReference: {fileID: 8300000, guid: 6c9d9cf5668bb9842997b62c45b46daf, type: 3}
+    - target: {fileID: 7096695086117136735, guid: 2024f3efc1a3b214493fe8734ced46be,
+        type: 3}
+      propertyPath: sounds.Array.data[3]
+      value: 
+      objectReference: {fileID: 8300000, guid: 6c9d9cf5668bb9842997b62c45b46daf, type: 3}
+    - target: {fileID: 7096695086117136735, guid: 2024f3efc1a3b214493fe8734ced46be,
+        type: 3}
+      propertyPath: varyPitchByDirection
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9114210099325290405, guid: 2024f3efc1a3b214493fe8734ced46be,
         type: 3}
