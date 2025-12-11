@@ -46,12 +46,11 @@ public class GoalAnimation : MonoBehaviour
         MapCreation mapCreation = FindObjectOfType<MapCreation>();
         if (mapCreation != null)
         {
-            mapCreation.GoToNextLevel();
+            mapCreation.OnLevelComplete();
         }
         else
         {
-            Debug.LogWarning("MapCreation no encontrado. Reiniciando nivel actual...");
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            Debug.LogWarning("MapCreation no encontrado...");
         }
     }
 }

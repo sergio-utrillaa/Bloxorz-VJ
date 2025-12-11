@@ -34,23 +34,67 @@ public class MapCreation : MonoBehaviour
     public float tileFallAnimationDuration = 0.3f;  // Duración de la animación de caída
     public float tileFallStartHeight = -10.0f;      // Altura final donde terminan los tiles
     public float delayBetweenFallTiles = 0.03f;     // Delay entre cada tile que cae
+    public float fadeOutDurationOnFall = 0.8f;      // Duración del fade cuando el cubo cae
     
     private bool isFalling = false;                 // Flag para evitar múltiples animaciones de caída
+
+    // Nuevas variables para la animación de victoria
+    public float tileRiseAnimationDuration = 1.0f;  // Duración de la animación de subida
+    public float tileRiseHeight = 15.0f;            // Altura a la que suben los tiles
+    public float delayBetweenRiseTiles = 0.02f;     // Delay entre cada tile que sube
+    public float fadeOutDuration = 1.0f;            // Duración del fade a negro
+    
+    private bool isVictoryAnimation = false;        // Flag para evitar múltiples animaciones
+    private bool hasStartedAnimation = false; // Flag para evitar múltiples inicios
+    private bool hasCreatedUI = false; // Nuevo flag para el UI
+
     private List<GameObject> allTiles = new List<GameObject>(); // Lista de todos los tiles creados
     private List<GameObject> allBridges = new List<GameObject>();
 
     // Start is called once after the MonoBehaviour is created
     void Start()
     {
-        Time.timeScale = 1.0f;   // 20% de velocidad → cámara lenta
-        CreateMap();
-        FindAllBridges();
-
-        //Crear UI del contador si no existe
-        if (FindObjectOfType<MoveCounterUI>() == null)
+        Time.timeScale = 1.0f;
+        
+        // Determinar si es la primera vez en el nivel
+        bool isFirstTime = LevelTransitionManager.Instance.IsFirstTimeInLevel();
+        
+        if (isFirstTime)
         {
-            GameObject uiObj = new GameObject("MoveCounterUI");
-            uiObj.AddComponent<MoveCounterUI>();
+            // Primera vez: mostrar pantalla de Stage
+            StartCoroutine(LevelTransitionManager.Instance.ShowStageScreen(
+                SceneManager.GetActiveScene().name,
+                OnStageScreenComplete
+            ));
+        }
+        else
+        {
+            // Reinicio: fade in directo
+            StartCoroutine(LevelTransitionManager.Instance.FadeInOnRestart(OnFadeInComplete));
+        }
+    }
+    
+    // Callback cuando termina la pantalla de Stage
+    void OnStageScreenComplete()
+    {
+        if (!hasStartedAnimation)
+        {
+            hasStartedAnimation = true;
+            
+            CreateMap();
+            FindAllBridges();
+        }
+    }
+    
+    // Callback cuando termina el fade in en reinicio
+    void OnFadeInComplete()
+    {
+        if (!hasStartedAnimation)
+        {
+            hasStartedAnimation = true;
+            
+            CreateMap();
+            FindAllBridges();
         }
     }
     
@@ -73,7 +117,19 @@ public class MapCreation : MonoBehaviour
             RestartMapCreation();
         }
     }
-
+    
+    // Nuevo método para crear el UI del contador
+    void CreateMoveCounterUI()
+    {
+        if (!hasCreatedUI && FindObjectOfType<MoveCounterUI>() == null)
+        {
+            hasCreatedUI = true;
+            GameObject uiObj = new GameObject("MoveCounterUI");
+            uiObj.AddComponent<MoveCounterUI>();
+            Debug.Log("UI del contador de movimientos creado después de la animación");
+        }
+    }
+    
     // Method to create the map from the text file
     void CreateMap()
     {
@@ -266,6 +322,16 @@ public class MapCreation : MonoBehaviour
       
       // Calculate total animation time (last tile's delay + animation duration)
       totalAnimationTime = maxDelay + tileAnimationDuration;
+      
+      // Crear UI del contador DESPUÉS de crear el mapa
+      // Usar Invoke para crear el UI después de un frame, asegurando que el fade ya terminó
+      Invoke("CreateMoveCounterUIDelayed", 0.1f);
+    }
+    
+    // Nuevo método para crear el UI con delay
+    void CreateMoveCounterUIDelayed()
+    {
+        CreateMoveCounterUI();
     }
     
     // Method to spawn and initialize the cube
@@ -385,7 +451,13 @@ public class MapCreation : MonoBehaviour
         // Esperar a que termine la animación de caída
         yield return new WaitForSeconds(maxFallDelay + tileFallAnimationDuration + 0.1f);
 
+        // Iniciar fade out a negro antes de reiniciar
+        yield return StartCoroutine(FadeToBlackOnFall());
+
         MoveCounter.Instance.RestartLevel();
+        
+        // Marcar que NO es primera vez (es un reinicio)
+        LevelTransitionManager.Instance.SetFirstTimeInLevel(false);
         
         // Reiniciar la escena
         Debug.Log("Reiniciando escena...");
@@ -422,10 +494,174 @@ public class MapCreation : MonoBehaviour
         Debug.Log($"Total de puentes encontrados: {allBridges.Count}");
     }
 
+    // Nuevo método para animar la victoria
+    public void OnLevelComplete()
+    {
+        if (isVictoryAnimation) return;
+        
+        isVictoryAnimation = true;
+        Debug.Log("¡Nivel completado! Iniciando animación de victoria...");
+        
+        StartCoroutine(AnimateVictory());
+    }
+    
+    // Corrutina para animar la victoria
+    IEnumerator AnimateVictory()
+    {
+        float maxRiseDelay = 0f;
+        
+        // Combinar tiles, puentes y botones en una sola lista
+        List<GameObject> allObjects = new List<GameObject>();
+        allObjects.AddRange(allTiles);
+        
+        // Añadir puentes activos
+        foreach (GameObject bridge in allBridges)
+        {
+            if (bridge != null && bridge.activeInHierarchy)
+            {
+                allObjects.Add(bridge);
+            }
+        }
+        
+        // Añadir botones
+        BotonRedondo[] botonesRedondos = FindObjectsOfType<BotonRedondo>();
+        foreach (var boton in botonesRedondos)
+        {
+            if (boton != null && boton.gameObject.activeInHierarchy)
+            {
+                allObjects.Add(boton.gameObject);
+            }
+        }
+        
+        BotonCruz[] botonesCruz = FindObjectsOfType<BotonCruz>();
+        foreach (var boton in botonesCruz)
+        {
+            if (boton != null && boton.gameObject.activeInHierarchy)
+            {
+                allObjects.Add(boton.gameObject);
+            }
+        }
+        
+        // Crear orden de subida en espiral desde el centro
+        List<GameObject> sortedObjects = new List<GameObject>(allObjects);
+        
+        // Calcular centro del nivel
+        Vector3 center = Vector3.zero;
+        foreach (var obj in allObjects)
+        {
+            if (obj != null)
+                center += obj.transform.position;
+        }
+        if (allObjects.Count > 0)
+            center /= allObjects.Count;
+        
+        // Ordenar por distancia al centro (los más cercanos primero)
+        sortedObjects.Sort((a, b) =>
+        {
+            if (a == null || b == null) return 0;
+            float distA = Vector3.Distance(a.transform.position, center);
+            float distB = Vector3.Distance(b.transform.position, center);
+            return distA.CompareTo(distB);
+        });
+        
+        // Animar cada objeto hacia arriba con delay
+        for (int i = 0; i < sortedObjects.Count; i++)
+        {
+            GameObject obj = sortedObjects[i];
+            
+            if (obj != null)
+            {
+                float riseDelay = i * delayBetweenRiseTiles;
+                maxRiseDelay = Mathf.Max(maxRiseDelay, riseDelay);
+                
+                // Deshabilitar componentes de animación existentes
+                TileAnimation tileAnim = obj.GetComponent<TileAnimation>();
+                if (tileAnim != null) tileAnim.enabled = false;
+                
+                TileFallAnimation fallAnim = obj.GetComponent<TileFallAnimation>();
+                if (fallAnim != null) fallAnim.enabled = false;
+                
+                // Crear animación de subida
+                TileRiseAnimation riseAnim = obj.AddComponent<TileRiseAnimation>();
+                riseAnim.StartRiseAnimation(riseDelay, tileRiseAnimationDuration, tileRiseHeight);
+            }
+        }
+        
+        // Esperar a que termine la animación de subida
+        yield return new WaitForSeconds(maxRiseDelay + tileRiseAnimationDuration + 0.5f);
+        
+        // Iniciar fade out
+        yield return StartCoroutine(FadeToBlack());
+        
+        // Avanzar al siguiente nivel
+        GoToNextLevel();
+    }
+    
+    // Corrutina para hacer fade a negro
+    IEnumerator FadeToBlack()
+    {
+        // Crear un panel negro sobre toda la pantalla
+        GameObject fadePanel = new GameObject("FadePanel");
+        Canvas canvas = fadePanel.AddComponent<Canvas>();
+        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+        canvas.sortingOrder = 9999;
+        
+        UnityEngine.UI.Image fadeImage = fadePanel.AddComponent<UnityEngine.UI.Image>();
+        fadeImage.color = new Color(0, 0, 0, 0);
+        fadeImage.rectTransform.anchorMin = Vector2.zero;
+        fadeImage.rectTransform.anchorMax = Vector2.one;
+        fadeImage.rectTransform.sizeDelta = Vector2.zero;
+        
+        // Animar alpha de 0 a 1
+        float elapsedTime = 0f;
+        while (elapsedTime < fadeOutDuration)
+        {
+            elapsedTime += Time.deltaTime;
+            float alpha = Mathf.Clamp01(elapsedTime / fadeOutDuration);
+            fadeImage.color = new Color(0, 0, 0, alpha);
+            yield return null;
+        }
+        
+        fadeImage.color = Color.black;
+    }
+
+    // Corrutina para hacer fade a negro (cuando el cubo cae)
+    IEnumerator FadeToBlackOnFall()
+    {
+        // Crear un panel negro sobre toda la pantalla
+        GameObject fadePanel = new GameObject("FadePanel_Fall");
+        Canvas canvas = fadePanel.AddComponent<Canvas>();
+        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+        canvas.sortingOrder = 9999;
+        
+        UnityEngine.UI.Image fadeImage = fadePanel.AddComponent<UnityEngine.UI.Image>();
+        fadeImage.color = new Color(0, 0, 0, 0);
+        fadeImage.rectTransform.anchorMin = Vector2.zero;
+        fadeImage.rectTransform.anchorMax = Vector2.one;
+        fadeImage.rectTransform.sizeDelta = Vector2.zero;
+        
+        // Animar alpha de 0 a 1
+        float elapsedTime = 0f;
+        while (elapsedTime < fadeOutDurationOnFall)
+        {
+            elapsedTime += Time.deltaTime;
+            float alpha = Mathf.Clamp01(elapsedTime / fadeOutDurationOnFall);
+            fadeImage.color = new Color(0, 0, 0, alpha);
+            yield return null;
+        }
+        
+        fadeImage.color = Color.black;
+        
+        Debug.Log("Fade out completado. Listo para reiniciar nivel.");
+    }
+
     // Nuevo método para avanzar al siguiente nivel
     public void GoToNextLevel()
     {
         MoveCounter.Instance.CompleteLevel();
+
+        // Marcar que SÍ es primera vez en el siguiente nivel
+        LevelTransitionManager.Instance.SetFirstTimeInLevel(true);
 
         // Determinar el siguiente nivel
         string currentSceneName = SceneManager.GetActiveScene().name;
@@ -440,7 +676,7 @@ public class MapCreation : MonoBehaviour
             Debug.Log("¡Has completado todos los niveles!");
         }
     }
-
+    
     // Método para determinar el nombre del siguiente nivel
     private string GetNextLevelName(string currentLevel)
     {

@@ -118,9 +118,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 08a660d18b69d154f821bb57a11e56fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rotSpeed: 240
+  rotSpeed: 420
   fallSpeed: 5
   fallAcceleration: 9.8
   fallRotSpeed: 360
-  sounds: []
+  movementCooldown: 0.15
+  sounds:
+  - {fileID: 8300000, guid: f958259140e2a5f4dbb92373828b6c3c, type: 3}
   fallSound: {fileID: 0}
