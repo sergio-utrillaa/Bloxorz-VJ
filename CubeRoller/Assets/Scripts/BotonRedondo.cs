@@ -6,7 +6,7 @@ public class BotonRedondo : MonoBehaviour
 {
     public bool isPressed = false;
     private bool hasTriggered = false;
-    private float lastTriggerTime = 0f; // Nuevo: tiempo del último trigger
+    private float lastTriggerTime = 0f;
     private float triggerDelay = 0.2f;
 
     private Vector3 originalPosition;
@@ -15,9 +15,16 @@ public class BotonRedondo : MonoBehaviour
     public bool toggleMode = true; // Si true, alterna activación/desactivación; si false, solo activa mientras está presionado
     private bool puentesActivos = false;
 
-    public GameObject efectoDestello; // Prefab del efecto de destello
+    public GameObject efectoDestello;
     public Color colorActivacion = Color.green;
     public Color colorDesactivacion = Color.red;
+    
+    // Sonidos
+    public AudioClip buttonPressSound;
+    public AudioClip bridgeActivateSound;   // ✨ NUEVO: Sonido al activar puente
+    public AudioClip bridgeDeactivateSound; // ✨ NUEVO: Sonido al desactivar puente
+    public float soundVolume = 1.0f;
+    public float bridgeSoundVolume = 1.0f;  // ✨ NUEVO: Volumen para sonidos de puente
     
     void Start()
     {
@@ -94,6 +101,13 @@ public class BotonRedondo : MonoBehaviour
     void PressButton()
     {
         isPressed = true;
+        
+        // ✨ NUEVO: Reproducir sonido al presionar
+        if (buttonPressSound != null)
+        {
+            AudioSource.PlayClipAtPoint(buttonPressSound, transform.position, soundVolume);
+        }
+        
         Debug.Log("Botón presionado!");
     }
     
@@ -119,13 +133,50 @@ public class BotonRedondo : MonoBehaviour
             return;
         }
         
+        // ✨ NUEVO: Reproducir sonido de activación/desactivación de puente
+        if (activo && bridgeActivateSound != null)
+        {
+            AudioSource.PlayClipAtPoint(bridgeActivateSound, transform.position, bridgeSoundVolume);
+        }
+        else if (!activo && bridgeDeactivateSound != null)
+        {
+            AudioSource.PlayClipAtPoint(bridgeDeactivateSound, transform.position, bridgeSoundVolume);
+        }
+        
         foreach (GameObject puente in puentesControlados)
         {
             if (puente != null && puente != this.gameObject)
             {
-                // Activar/desactivar el puente
-                puente.SetActive(activo);
-                Debug.Log($"Puente {puente.name} {(activo ? "activado" : "desactivado")}");
+                if (activo)
+                {
+                    // Activar el puente primero (si estaba desactivado)
+                    if (!puente.activeInHierarchy)
+                    {
+                        puente.SetActive(true);
+                    }
+                    
+                    // Añadir y ejecutar la animación de subida
+                    BridgeRiseAnimation riseAnim = puente.GetComponent<BridgeRiseAnimation>();
+                    if (riseAnim == null)
+                    {
+                        riseAnim = puente.AddComponent<BridgeRiseAnimation>();
+                    }
+                    riseAnim.StartRiseAnimation(0.5f);
+                    
+                    Debug.Log($"Puente {puente.name} activado con animación");
+                }
+                else
+                {
+                    // Añadir y ejecutar la animación de caída
+                    BridgeRiseAnimation riseAnim = puente.GetComponent<BridgeRiseAnimation>();
+                    if (riseAnim == null)
+                    {
+                        riseAnim = puente.AddComponent<BridgeRiseAnimation>();
+                    }
+                    riseAnim.StartFallAnimation(0.5f);
+                    
+                    Debug.Log($"Puente {puente.name} desactivado con animación");
+                }
                 
                 // Mostrar efecto de destello si está habilitado
                 if (mostrarEfecto && efectoDestello != null)

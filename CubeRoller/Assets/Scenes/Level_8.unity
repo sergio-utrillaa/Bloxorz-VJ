@@ -182,6 +182,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7096695086117136735, guid: 2024f3efc1a3b214493fe8734ced46be,
         type: 3}
+      propertyPath: rotSpeed
+      value: 360
+      objectReference: {fileID: 0}
+    - target: {fileID: 7096695086117136735, guid: 2024f3efc1a3b214493fe8734ced46be,
+        type: 3}
       propertyPath: fallRotSpeed
       value: 360
       objectReference: {fileID: 0}
@@ -234,6 +239,10 @@ MonoBehaviour:
   smallCubePrefab: {fileID: 9114210099325290405, guid: f94b0c853cf12ff4ea2eb3b91a060ed9,
     type: 3}
   mergeCheckDistance: 1.5
+  splitSound: {fileID: 8300000, guid: cad0db1e7a2b8e34099937e3a36ed95e, type: 3}
+  mergeSound: {fileID: 8300000, guid: 0b3cec5415d138c4dad3dad7f1fef35c, type: 3}
+  splitSoundVolume: 2
+  mergeSoundVolume: 2
 --- !u!4 &270786741
 Transform:
   m_ObjectHideFlags: 0
@@ -397,7 +406,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: cf1610e88d4838e4b8f8d7af514d320d, type: 3}
+  m_audioClip: {fileID: 0}
   m_PlayOnAwake: 1
   m_Volume: 0.2
   m_Pitch: 1
@@ -697,12 +706,13 @@ MonoBehaviour:
   map: {fileID: 4900000, guid: 267b21b4cf1c8314e919df12474e8b58, type: 3}
   tile: {fileID: 7189405941443868808, guid: e50dcff8f139adb4bb9392b89156f777, type: 3}
   cube: {fileID: 1926290601}
-  cubePosition: {x: 21, y: 1, z: 5}
+  cubePosition: {x: 21, y: 1, z: 6}
   botonRedondoPrefab: {fileID: 3797884833960337822, guid: 4e526773936265d479275f1f32c29836,
     type: 3}
   botonCruzPrefab: {fileID: 0}
   botonDivisorPrefab: {fileID: 3797884833960337822, guid: 78278cf221239bf468d732618b658aa1,
     type: 3}
+  tileNaranjaPrefab: {fileID: 0}
   tileAnimationDuration: 0.5
   tileStartHeight: -10
   delayBetweenTiles: 0.05
@@ -711,6 +721,55 @@ MonoBehaviour:
   tileFallAnimationDuration: 0.3
   tileFallStartHeight: -10
   delayBetweenFallTiles: 0.03
+  fadeOutDurationOnFall: 0.8
+  tileRiseAnimationDuration: 1
+  tileRiseHeight: 15
+  delayBetweenRiseTiles: 0.02
+  fadeOutDuration: 1
+--- !u!1 &1915239648
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1915239650}
+  - component: {fileID: 1915239649}
+  m_Layer: 0
+  m_Name: LevelSwitcher
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1915239649
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1915239648}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f4692998b8c6404a95084fdf97834f3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &1915239650
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1915239648}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 10.337804, y: 4.5674677, z: 12.994644}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1926290601 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 9114210099325290405, guid: 2024f3efc1a3b214493fe8734ced46be,
@@ -727,3 +786,4 @@ SceneRoots:
   - {fileID: 1325002399}
   - {fileID: 205670638}
   - {fileID: 270786741}
+  - {fileID: 1915239650}

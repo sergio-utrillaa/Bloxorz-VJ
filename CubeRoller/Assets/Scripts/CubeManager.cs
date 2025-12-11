@@ -17,6 +17,14 @@ public class CubeManager : MonoBehaviour
     
     public float mergeCheckDistance = 1.5f;     // Distancia para verificar unión
     
+    // ✨ NUEVO: Sonidos para división y fusión
+    public AudioClip splitSound;                // Sonido al dividir el cubo
+    public AudioClip mergeSound;                // Sonido al fusionar los cubos
+    [Range(0f, 5f)]
+    public float splitSoundVolume = 2.0f;       // Volumen del sonido de división
+    [Range(0f, 5f)]
+    public float mergeSoundVolume = 2.0f;       // Volumen del sonido de fusión
+    
     void Awake()
     {
         if (Instance == null)
@@ -63,6 +71,12 @@ public class CubeManager : MonoBehaviour
     {
         if (isSplit || mainCube == null) return;
         
+        // ✨ NUEVO: Reproducir sonido de división
+        if (splitSound != null && mainCube != null)
+        {
+            PlaySound(splitSound, mainCube.transform.position, splitSoundVolume);
+        }
+        
         // Desactivar el cubo principal
         mainCube.SetActive(false);
         
@@ -81,6 +95,23 @@ public class CubeManager : MonoBehaviour
         isSplit = true;
         
         Debug.Log("Cubo dividido en dos cubos pequeños");
+    }
+    
+    // ✨ NUEVO: Método para reproducir sonidos con volumen mayor a 1.0
+    void PlaySound(AudioClip clip, Vector3 position, float volume)
+    {
+        if (clip == null) return;
+        
+        GameObject tempAudio = new GameObject("TempAudio_" + clip.name);
+        tempAudio.transform.position = position;
+        
+        AudioSource audioSource = tempAudio.AddComponent<AudioSource>();
+        audioSource.clip = clip;
+        audioSource.volume = volume;
+        audioSource.spatialBlend = 0f; // Sonido 2D (no espacial)
+        audioSource.Play();
+        
+        Destroy(tempAudio, clip.length);
     }
     
     private void SwitchControlledCube()
@@ -166,8 +197,15 @@ public class CubeManager : MonoBehaviour
     
     private void MergeCubes(Vector3 pos1, Vector3 pos2, int dx, int dz)
     {
+        // ✨ NUEVO: Reproducir sonido de fusión
+        if (mergeSound != null)
+        {
+            Vector3 mergePosition = (pos1 + pos2) / 2f;
+            PlaySound(mergeSound, mergePosition, mergeSoundVolume);
+        }
+        
         // Calcular posición y rotación del cubo fusionado
-        Vector3 mergePosition = (pos1 + pos2) / 2f;
+        Vector3 mergePosition2 = (pos1 + pos2) / 2f;
         Quaternion mergeRotation = Quaternion.identity;
         bool isHorizontalX = false;
         
@@ -191,7 +229,7 @@ public class CubeManager : MonoBehaviour
         smallCube2 = null;
         
         // Reactivar el cubo principal
-        mainCube.transform.position = mergePosition;
+        mainCube.transform.position = mergePosition2;
         mainCube.transform.rotation = mergeRotation;
         mainCube.SetActive(true);
         

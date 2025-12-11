@@ -10,14 +10,16 @@ using UnityEngine;
 public class MoveCube : MonoBehaviour
 {
     bool bMoving = false; 			// Is the object in the middle of moving?
-	bool bFalling = false; 			// Is the object falling?
+    bool bFalling = false; 			// Is the object falling?
     bool bEdgeRotation = false;     // Is the cube doing initial edge rotation before free fall?
+    bool bCooldown = false;         // ✨ NUEVO: Está en pausa después de un movimiento?
     
-	public float rotSpeed; 			// Rotation speed in degrees per second
+    public float rotSpeed; 			// Rotation speed in degrees per second
     public float fallSpeed = 10f; 		// Maximum fall speed in the Y direction
     public float fallAcceleration = 9.8f; // Acceleration of falling (like gravity)
     public float fallRotSpeed = 360.0f; // Rotation speed while falling
     public float edgeRotationAngle = 90.0f; // Degrees to rotate on edge before free fall
+    public float movementCooldown = 0.1f; // ✨ NUEVO: Pausa después de cada movimiento (en segundos)
     
     private float currentFallSpeed; // Current fall speed (starts at 0, accelerates to fallSpeed)
     private bool hasFallen = false;
@@ -25,8 +27,10 @@ public class MoveCube : MonoBehaviour
     private bool isOnGoalTile = false;
     private bool isGoalAnimationActive = false;
 
-    private bool isOrangeTileFalling = false; 
-
+    private bool isOrangeTileFalling = false;
+    
+    private float cooldownTimer = 0f; // ✨ NUEVO: Temporizador para el cooldown
+    
     Vector3 rotPoint, rotAxis; 		// Rotation movement is performed around the line formed by rotPoint and rotAxis
 	float rotRemainder; 			// The angle that the cube still has to rotate before the current movement is completed
     float rotDir; 					// Has rotRemainder to be applied in the positive or negative direction?
@@ -44,6 +48,8 @@ public class MoveCube : MonoBehaviour
 
     public AudioClip[] sounds; 		// Sounds to play when the cube rotates
     public AudioClip fallSound; 	// Sound to play when the cube starts falling
+    public AudioClip goalSound;     // Sonido al llegar a la meta
+
 
     enum CubeState { Vertical, HorizontalX, HorizontalZ }
     CubeState state = CubeState.Vertical;
@@ -55,6 +61,8 @@ public class MoveCube : MonoBehaviour
         bMoving = false;
         bFalling = false;
         bEdgeRotation = false;
+        bCooldown = false; // ✨ NUEVO
+        cooldownTimer = 0f; // ✨ NUEVO
         state = CubeState.Vertical;
         stateBeforeMove = CubeState.Vertical;
         rotRemainder = 0f;
@@ -317,6 +325,11 @@ public class MoveCube : MonoBehaviour
         {
             isGoalAnimationActive = true;
             bMoving = false; // Bloquear movimiento
+
+            if (goalSound != null)
+            {
+                AudioSource.PlayClipAtPoint(goalSound, transform.position, 1.5f);
+            }
             
             // Añadir componente de animación de meta
             GoalAnimation goalAnim = gameObject.AddComponent<GoalAnimation>();
@@ -351,6 +364,27 @@ public class MoveCube : MonoBehaviour
         if (isGoalAnimationActive)
         {
             return;
+        }
+
+        // ✨ MODIFICADO: Gestionar el cooldown (cancelar si no está en el suelo)
+        if (bCooldown)
+        {
+            // Si el cubo no está en el suelo, cancelar el cooldown inmediatamente
+            if (!isGrounded())
+            {
+                bCooldown = false;
+                cooldownTimer = 0f;
+            }
+            else
+            {
+                cooldownTimer -= Time.deltaTime;
+                if (cooldownTimer <= 0f)
+                {
+                    bCooldown = false;
+                    cooldownTimer = 0f;
+                }
+                return; // No permitir input durante el cooldown
+            }
         }
 
         if(bFalling)
@@ -462,6 +496,10 @@ public class MoveCube : MonoBehaviour
             {
                 transform.RotateAround(rotPoint, rotAxis, rotRemainder * rotDir);
                 bMoving = false;
+                
+                // ✨ NUEVO: Iniciar cooldown después de completar el movimiento
+                bCooldown = true;
+                cooldownTimer = movementCooldown;
             }
             else
             {
@@ -471,11 +509,15 @@ public class MoveCube : MonoBehaviour
         }
         else
         {
-			// If we are not falling, nor moving, we check first if we should fall, then if we have to move
+            // If we are not falling, nor moving, we check first if we should fall, then if we have to move
             if (!isGrounded())
             {
                 bFalling = true;
                 currentFallSpeed = fallSpeed; // Start falling from zero speed
+                
+                // ✨ NUEVO: Cancelar cooldown si empieza a caer
+                bCooldown = false;
+                cooldownTimer = 0f;
                 
                 // Configurar la rotación de caída según el lado sin soporte
                 SetupFallRotation();
@@ -495,12 +537,12 @@ public class MoveCube : MonoBehaviour
                 lastMoveDirection = dir; // Guardar la dirección del movimiento
 
                 MoveCounter.Instance.AddMove();
-				
-				// We play a random movemnt sound
+                
+                // We play a random movemnt sound
                 int iSound = UnityEngine.Random.Range(0, sounds.Length);
                 AudioSource.PlayClipAtPoint(sounds[iSound], transform.position, 1.0f);
-				
-				// Set rotDir, rotRemainder, rotPoint, and rotAxis according to the movement the player wants to make
+
+                // Set rotDir, rotRemainder, rotPoint, and rotAxis according to the movement the player wants to make
                 if (dir.x > 0.99)
                 {
                     
