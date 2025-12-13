@@ -163,36 +163,23 @@ public class BotonCruz : MonoBehaviour
         {
             if (puente != null && puente != this.gameObject && puente.name != this.name)
             {
-                if (activo)
+                // Activar el puente primero (si estaba desactivado)
+                if (!puente.activeInHierarchy)
                 {
-                    // Activar el puente primero (si estaba desactivado)
-                    if (!puente.activeInHierarchy)
-                    {
-                        puente.SetActive(true);
-                    }
-                    
-                    // Añadir y ejecutar la animación de subida
-                    BridgeRiseAnimation riseAnim = puente.GetComponent<BridgeRiseAnimation>();
-                    if (riseAnim == null)
-                    {
-                        riseAnim = puente.AddComponent<BridgeRiseAnimation>();
-                    }
-                    riseAnim.StartRiseAnimation(0.5f);
-                    
-                    Debug.Log($"Puente {puente.name} activado con animación por botón cruz");
+                    puente.SetActive(true);
                 }
-                else
+                
+                // Obtener o añadir el componente de animación
+                BridgeRiseAnimation riseAnim = puente.GetComponent<BridgeRiseAnimation>();
+                if (riseAnim == null)
                 {
-                    // Añadir y ejecutar la animación de caída
-                    BridgeRiseAnimation riseAnim = puente.GetComponent<BridgeRiseAnimation>();
-                    if (riseAnim == null)
-                    {
-                        riseAnim = puente.AddComponent<BridgeRiseAnimation>();
-                    }
-                    riseAnim.StartFallAnimation(0.5f);
-                    
-                    Debug.Log($"Puente {puente.name} desactivado con animación por botón cruz");
+                    riseAnim = puente.AddComponent<BridgeRiseAnimation>();
                 }
+                
+                // Alternar el estado del puente
+                riseAnim.Toggle();
+                
+                Debug.Log($"Puente {puente.name} alternado por botón cruz");
                 
                 // Mostrar efecto de destello si está habilitado
                 if (mostrarEfecto && efectoDestello != null)
@@ -202,7 +189,7 @@ public class BotonCruz : MonoBehaviour
             }
         }
         
-        Debug.Log($"Puentes {(activo ? "activados" : "desactivados")} por botón cruz!");
+        Debug.Log($"Puentes alternados por botón cruz!");
     }
     
     void MostrarEfectoDestello(Vector3 posicion, bool activando)
