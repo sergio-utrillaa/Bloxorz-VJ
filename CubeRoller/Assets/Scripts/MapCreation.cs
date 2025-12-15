@@ -306,11 +306,18 @@ public class MapCreation : MonoBehaviour
                     goalTile.name = $"GoalTile_{x}_{z}";
                     goalTile.tag = "Goal"; // Importante: asignar tag Goal
                     
-                    // Hacer el tile invisible
+                    // Hacer el tile invisible (incluyendo todos sus hijos)
                     Renderer renderer = goalTile.GetComponent<Renderer>();
                     if (renderer != null)
                     {
                         renderer.enabled = false; // Desactivar el renderer para hacerlo invisible
+                    }
+                    
+                    // Desactivar también los renderers de todos los hijos
+                    Renderer[] childRenderers = goalTile.GetComponentsInChildren<Renderer>();
+                    foreach (Renderer childRenderer in childRenderers)
+                    {
+                        childRenderer.enabled = false;
                     }
                     
                     // NO añadir el tile de meta a la lista de tiles para que no se anime ni caiga
