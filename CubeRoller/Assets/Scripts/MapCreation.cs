@@ -355,7 +355,29 @@ public class MapCreation : MonoBehaviour
             cubeAnim.StartFallAnimation(cubeFallDuration, cubeSpawnHeight);
             
             cubeSpawned = true;
+            
+            // Activar los puentes después de que termine la animación de tiles
+            ActivateBridges();
         }
+    }
+    
+    // Método para activar los puentes en su posición inicial
+    void ActivateBridges()
+    {
+        foreach (GameObject bridgeObj in allBridges)
+        {
+            if (bridgeObj != null)
+            {
+                bridgeObj.SetActive(true);
+                BridgeRiseAnimation bridge = bridgeObj.GetComponent<BridgeRiseAnimation>();
+                if (bridge != null)
+                {
+                    bridge.InitializeBridge();
+                }
+            }
+        }
+        
+        Debug.Log($"Activados {allBridges.Count} puentes");
     }
 
     // Método llamado cuando el cubo se cae
@@ -479,15 +501,17 @@ public class MapCreation : MonoBehaviour
 
     void FindAllBridges()
     {
-        // Buscar todos los GameObjects que contengan "Puente" en su nombre
+        // Buscar todos los GameObjects que contengan "Puente" o "Bridge" en su nombre
         GameObject[] allObjects = FindObjectsOfType<GameObject>();
         
         foreach (GameObject obj in allObjects)
         {
-            if (obj.name.Contains("Puente") && obj.activeInHierarchy)
+            if ((obj.name.Contains("Bridge")) && obj.activeInHierarchy)
             {
                 allBridges.Add(obj);
-                Debug.Log($"Puente encontrado y añadido a la lista: {obj.name}");
+                // Desactivar el puente inicialmente
+                obj.SetActive(false);
+                Debug.Log($"Puente/Bridge encontrado y desactivado: {obj.name}");
             }
         }
         

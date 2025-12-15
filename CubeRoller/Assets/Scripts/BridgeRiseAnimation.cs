@@ -3,182 +3,225 @@ using UnityEngine;
 
 public class BridgeRiseAnimation : MonoBehaviour
 {
-    private Vector3 originalPosition;      // Posición original guardada la primera vez
-    private Quaternion originalRotation;   // Rotación original guardada la primera vez
-    private Vector3 hiddenPosition;        // Posición oculta (debajo del suelo)
-    private Quaternion hiddenRotation;     // Rotación oculta (90 grados rotado)
-    private Vector3 pivotOffset;           // Offset del punto de pivote para la rotación
-    private float animationDuration = 0.5f;
-    private bool isAnimating = false;
-    private bool isInitialized = false;    // Flag para saber si ya se inicializó
+    [Header("Configuración")]
+    [Tooltip("Duración de la animación en segundos")]
+    public float animationDuration = 1f;
     
-    void Awake()
+    [Tooltip("Ángulo máximo de apertura del puente (grados)")]
+    public float openAngle = 180f;
+    
+    [Header("Referencias")]
+    [Tooltip("Primera parte del puente (se detecta automáticamente si no se asigna)")]
+    public Transform leftPart;
+    
+    [Tooltip("Segunda parte del puente (se detecta automáticamente si no se asigna)")]
+    public Transform rightPart;
+    
+    public Vector3 leftpivotoffset = new Vector3(-0.5f, 0.05f, 0f);
+    public Vector3 rightpivotoffset = new Vector3(0.5f, 0.05f, 0f);
+    
+    private Quaternion leftClosedRotation;
+    private Quaternion rightClosedRotation;
+    private Vector3 leftPivotPoint;
+    private Vector3 rightPivotPoint;
+    private Vector3 rotationAxis;
+    private bool isAnimating = false;
+    private bool isInitialized = false;
+    private bool isOrientedInX = true;
+    private bool isCurrentlyOpen = false;
+    
+    public void InitializeBridge()
     {
-        // Guardar posición y rotación original al crear el componente
-        if (!isInitialized)
+        // Buscar las dos partes del puente automáticamente si no están asignadas
+        if (leftPart == null || rightPart == null)
         {
-            InitializePositions();
+            Transform[] children = GetComponentsInChildren<Transform>();
+            int childCount = 0;
+            
+            foreach (Transform child in children)
+            {
+                if (child != transform) // Ignorar el padre
+                {
+                    if (leftPart == null)
+                        leftPart = child;
+                    else if (rightPart == null)
+                        rightPart = child;
+                    
+                    childCount++;
+                    if (childCount >= 2) break;
+                }
+            }
         }
+        
+        if (leftPart == null || rightPart == null)
+        {
+            Debug.LogError($"Bridge {gameObject.name} no tiene 2 partes (tiles). Asegúrate de que el prefab tenga 2 hijos.");
+            return;
+        }
+        
+        // Guardar rotaciones cerradas (posición actual)
+        leftClosedRotation = leftPart.localRotation;
+        rightClosedRotation = rightPart.localRotation;
+        
+        // Determinar orientación del puente y calcular puntos de pivote
+        Vector3 bridgeForward = transform.forward;
+        isOrientedInX = Mathf.Abs(bridgeForward.x) > Mathf.Abs(bridgeForward.z);
+        Debug.Log($"[Bridge] {gameObject.name} orientado en: {(isOrientedInX ? "X" : "Z")} (forward: {bridgeForward})");
+        
+        leftPivotPoint = leftPart.position + leftPart.TransformDirection(leftpivotoffset);
+        rightPivotPoint = rightPart.position + rightPart.TransformDirection(rightpivotoffset);
+        rotationAxis = leftPart.forward;
+        
+        isInitialized = true;
+        isCurrentlyOpen = true;
+        SetOpen(true);
     }
     
-    void InitializePositions()
+    public void StartRiseAnimation(float duration = -1f)
     {
-        // Guardar posición y rotación original
-        originalPosition = transform.position;
-        originalRotation = transform.rotation;
+        if (isAnimating) return;
+        if (!isInitialized) InitializeBridge();
+        if (duration > 0) animationDuration = duration;
+        StartCoroutine(AnimateToOpen());
+    }
+    
+    IEnumerator AnimateToOpen()
+    {
+        Debug.Log($"[Bridge] {gameObject.name} - AnimateToOpen INICIADO (Orientación: {(isOrientedInX ? "X" : "Z")})");
+        isAnimating = true;
+        float elapsedTime = 0f;
         
-        // Detectar la orientación del puente para determinar el pivote correcto
-        // Asumiendo que el puente tiene escala (1, 0.1, 1) y dos tiles
-        Vector3 forward = transform.forward;
-        Vector3 right = transform.right;
+        // Guardar posiciones y rotaciones iniciales
+        Vector3 leftStartPos = leftPart.position;
+        Vector3 rightStartPos = rightPart.position;
+        Quaternion leftStartRot = leftPart.rotation;
+        Quaternion rightStartRot = rightPart.rotation;
         
-        // Determinar si el puente está orientado en X o Z
-        bool isOrientedInX = Mathf.Abs(right.x) > Mathf.Abs(right.z);
+        // Calcular la rotación necesaria para cerrar desde la posición actual
+        float currentLeftAngle = Vector3.SignedAngle(
+            leftClosedRotation * Vector3.up,
+            leftStartRot * Vector3.up,
+            rotationAxis
+        );
+        float currentRightAngle = Vector3.SignedAngle(
+            rightClosedRotation * Vector3.up,
+            rightStartRot * Vector3.up,
+            rotationAxis
+        );
+        
+        while (elapsedTime < animationDuration)
+        {
+            elapsedTime += Time.deltaTime;
+            float t = elapsedTime / animationDuration;
+            
+            // Curva suave (ease out)
+            t = 1f - Mathf.Pow(1f - t, 3f);
+            
+            // Calcular el ángulo actual de rotación
+            float leftAngle = Mathf.Lerp(0f, -currentLeftAngle, t);
+            float rightAngle = Mathf.Lerp(0f, -currentRightAngle, t);
+            
+            // Restaurar a posición inicial y aplicar rotación alrededor del pivote
+            leftPart.position = leftStartPos;
+            leftPart.rotation = leftStartRot;
+            leftPart.RotateAround(leftPivotPoint, rotationAxis, -leftAngle);
+            
+            rightPart.position = rightStartPos;
+            rightPart.rotation = rightStartRot;
+            rightPart.RotateAround(rightPivotPoint, rotationAxis, rightAngle);
+            
+            yield return null;
+        }
+        
+        leftPart.localRotation = leftClosedRotation;
+        rightPart.localRotation = rightClosedRotation;
+        isCurrentlyOpen = true;
+        isAnimating = false;
+        Debug.Log($"[Bridge] {gameObject.name} - AnimateToOpen COMPLETADO");
+    }
+    
+    public void StartFallAnimation(float duration = -1f)
+    {
+        if (isAnimating) return;
+        if (!isInitialized) InitializeBridge();
+        if (duration > 0) animationDuration = duration;
+        StartCoroutine(AnimateToClose());
+    }
+    
+    IEnumerator AnimateToClose()
+    {
+        Debug.Log($"[Bridge] {gameObject.name} - AnimateToClose INICIADO (Orientación: {(isOrientedInX ? "X" : "Z")})");
+        isAnimating = true;
+        float elapsedTime = 0f;
+        
+        // Guardar posiciones y rotaciones iniciales (cerradas)
+        Vector3 leftStartPos = leftPart.position;
+        Vector3 rightStartPos = rightPart.position;
+        Quaternion leftStartRot = leftPart.rotation;
+        Quaternion rightStartRot = rightPart.rotation;
+        
+        while (elapsedTime < animationDuration)
+        {
+            elapsedTime += Time.deltaTime;
+            float t = elapsedTime / animationDuration;
+            
+            // Curva de aceleración (ease in)
+            t = t * t;
+            
+            // Calcular el ángulo actual de rotación (180 grados)
+            float currentAngle = Mathf.Lerp(0f, openAngle, t);
+            
+            // Aplicar rotación alrededor del pivote
+            leftPart.position = leftStartPos;
+            leftPart.rotation = leftStartRot;
+            
+            rightPart.position = rightStartPos;
+            rightPart.rotation = rightStartRot;
+            
+            leftPart.RotateAround(leftPivotPoint, rotationAxis, -currentAngle);
+            rightPart.RotateAround(rightPivotPoint, rotationAxis, currentAngle);
+            
+            yield return null;
+        }
+        
+        // Asegurar rotación final abierta (180 grados)
+        leftPart.position = leftStartPos;
+        leftPart.rotation = leftStartRot;
+        
+        rightPart.position = rightStartPos;
+        rightPart.rotation = rightStartRot;
         
         if (isOrientedInX)
         {
-            // Puente orientado en X (horizontal)
-            // El pivote está en el borde inferior del primer tile
-            pivotOffset = new Vector3(-0.5f, -0.05f, 0f); // Borde izquierdo inferior
-            
-            // Rotación inicial: 90 grados hacia abajo alrededor del eje Z
-            hiddenRotation = originalRotation * Quaternion.Euler(0f, 0f, -90f);
-            
-            // Calcular posición oculta basada en el pivote
-            // Cuando está rotado 90°, el puente apunta hacia abajo
-            Vector3 hiddenOffset = originalRotation * new Vector3(0f, -1.0f, 0f);
-            hiddenPosition = originalPosition + pivotOffset + hiddenOffset - pivotOffset;
+            leftPart.RotateAround(leftPivotPoint, rotationAxis, -openAngle);
+            rightPart.RotateAround(rightPivotPoint, rotationAxis, -openAngle);
         }
         else
         {
-            // Puente orientado en Z (vertical)
-            // El pivote está en el borde inferior del primer tile
-            pivotOffset = new Vector3(0f, -0.05f, -0.5f); // Borde frontal inferior
-            
-            // Rotación inicial: 90 grados hacia abajo alrededor del eje X
-            hiddenRotation = originalRotation * Quaternion.Euler(90f, 0f, 0f);
-            
-            // Calcular posición oculta basada en el pivote
-            Vector3 hiddenOffset = originalRotation * new Vector3(0f, -1.0f, 0f);
-            hiddenPosition = originalPosition + pivotOffset + hiddenOffset - pivotOffset;
+            leftPart.RotateAround(leftPivotPoint, rotationAxis, -openAngle);
+            rightPart.RotateAround(rightPivotPoint, rotationAxis, openAngle);
         }
         
-        isInitialized = true;
-        
-        Debug.Log($"Puente {gameObject.name} inicializado:");
-        Debug.Log($"  Original Position: {originalPosition}");
-        Debug.Log($"  Hidden Position: {hiddenPosition}");
-        Debug.Log($"  Pivot Offset: {pivotOffset}");
-        Debug.Log($"  Oriented in X: {isOrientedInX}");
+        isCurrentlyOpen = false;
+        isAnimating = false;
+        Debug.Log($"[Bridge] {gameObject.name} - AnimateToClose COMPLETADO");
     }
     
-    public void StartRiseAnimation(float duration = 0.5f)
+    public void Toggle()
     {
         if (isAnimating) return;
+        if (!isInitialized) InitializeBridge();
         
-        if (!isInitialized)
-        {
-            InitializePositions();
-        }
-        
-        animationDuration = duration;
-        isAnimating = true;
-        StartCoroutine(AnimateRise());
+        if (isCurrentlyOpen)
+            StartFallAnimation(0.5f); // Cerrar
+        else
+            StartRiseAnimation(0.5f); // Abrir
     }
     
-    IEnumerator AnimateRise()
+    public void SetOpen(bool open)
     {
-        float elapsedTime = 0f;
-        
-        // Asegurar que empieza desde la posición oculta
-        transform.position = hiddenPosition;
-        transform.rotation = hiddenRotation;
-        
-        while (elapsedTime < animationDuration)
-        {
-            elapsedTime += Time.deltaTime;
-            float t = elapsedTime / animationDuration;
-            
-            // Curva de animación suave (ease out cubic)
-            t = 1f - Mathf.Pow(1f - t, 3f);
-            
-            // Interpolar rotación y posición usando el pivote
-            // Calcular punto de pivote en el mundo
-            Vector3 currentPivot = Vector3.Lerp(
-                hiddenPosition + hiddenRotation * pivotOffset,
-                originalPosition + originalRotation * pivotOffset,
-                t
-            );
-            
-            // Interpolar rotación
-            transform.rotation = Quaternion.Slerp(hiddenRotation, originalRotation, t);
-            
-            // Calcular posición basada en el pivote actual
-            transform.position = currentPivot - transform.rotation * pivotOffset;
-            
-            yield return null;
-        }
-        
-        // Asegurar posición y rotación final (original)
-        transform.position = originalPosition;
-        transform.rotation = originalRotation;
-        
-        isAnimating = false;
-    }
-    
-    public void StartFallAnimation(float duration = 0.5f)
-    {
-        if (isAnimating) return;
-        
-        if (!isInitialized)
-        {
-            InitializePositions();
-        }
-        
-        animationDuration = duration;
-        isAnimating = true;
-        StartCoroutine(AnimateFall());
-    }
-    
-    IEnumerator AnimateFall()
-    {
-        float elapsedTime = 0f;
-        
-        // Asegurar que empieza desde la posición original
-        transform.position = originalPosition;
-        transform.rotation = originalRotation;
-        
-        while (elapsedTime < animationDuration)
-        {
-            elapsedTime += Time.deltaTime;
-            float t = elapsedTime / animationDuration;
-            
-            // Curva de animación (ease in)
-            t = t * t;
-            
-            // Interpolar rotación y posición usando el pivote
-            Vector3 currentPivot = Vector3.Lerp(
-                originalPosition + originalRotation * pivotOffset,
-                hiddenPosition + hiddenRotation * pivotOffset,
-                t
-            );
-            
-            // Interpolar rotación
-            transform.rotation = Quaternion.Slerp(originalRotation, hiddenRotation, t);
-            
-            // Calcular posición basada en el pivote actual
-            transform.position = currentPivot - transform.rotation * pivotOffset;
-            
-            yield return null;
-        }
-        
-        // Asegurar posición y rotación final (oculta)
-        transform.position = hiddenPosition;
-        transform.rotation = hiddenRotation;
-        
-        isAnimating = false;
-        
-        // Desactivar el puente después de la animación
-        gameObject.SetActive(false);
+        Debug.Log($"BridgeRiseAnimation SetOpen called with {open}");
+        if (!isInitialized) InitializeBridge();
+        isCurrentlyOpen = open;
     }
 }
