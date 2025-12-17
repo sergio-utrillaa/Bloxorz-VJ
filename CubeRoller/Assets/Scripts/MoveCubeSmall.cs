@@ -7,6 +7,7 @@ public class MoveCubeSmall : MonoBehaviour
     bool bMoving = false;
     bool bFalling = false;
     bool bCooldown = false;         // ✨ NUEVO: Está en pausa después de un movimiento?
+    private bool isControlled = true; // ✨ NUEVO: ¿Este cubo está siendo controlado por el jugador?
     
     public float rotSpeed = 360.0f;
     public float fallSpeed = 10f;             // Maximum fall speed
@@ -35,6 +36,12 @@ public class MoveCubeSmall : MonoBehaviour
     public bool IsMoving()
     {
         return bMoving || bFalling;
+    }
+    
+    // ✨ NUEVO: Método para establecer si este cubo está siendo controlado
+    public void SetControlled(bool controlled)
+    {
+        isControlled = controlled;
     }
     
     bool isGrounded()
@@ -140,6 +147,7 @@ public class MoveCubeSmall : MonoBehaviour
         }
         else
         {
+            // ✨ NUEVO: Verificar caída SIEMPRE, independientemente de si está controlado
             if (!isGrounded())
             {
                 bFalling = true;
@@ -156,7 +164,12 @@ public class MoveCubeSmall : MonoBehaviour
                 {
                     AudioSource.PlayClipAtPoint(fallSound, transform.position, 1.5f);
                 }
+                
+                return; // Salir inmediatamente para empezar a caer
             }
+            
+            // ✨ NUEVO: Solo procesar input si este cubo está siendo controlado
+            if (!isControlled) return;
             
             Vector2 dir = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
             dir.Normalize();
@@ -213,7 +226,7 @@ public class MoveCubeSmall : MonoBehaviour
     void SetupFallRotation()
     {
         // Si no hay dirección guardada, no rotar al caer
-        if (fallDirection == Vector3.zero)
+        if (fallDirection == Vector3.zero || isControlled == false)
         {
             fallRotAxis = Vector3.zero;
             return;

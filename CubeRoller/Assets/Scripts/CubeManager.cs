@@ -135,14 +135,15 @@ public class CubeManager : MonoBehaviour
         }
     }
     
-    private void SetCubeControl(GameObject cube, bool enabled)
+    private void SetCubeControl(GameObject cube, bool controlled)
     {
         if (cube == null) return;
         
+        // ✨ MODIFICADO: Usar SetControlled en lugar de enabled para que el Update siempre se ejecute
         MoveCubeSmall moveScript = cube.GetComponent<MoveCubeSmall>();
         if (moveScript != null)
         {
-            moveScript.enabled = enabled;
+            moveScript.SetControlled(controlled);
         }
         
         // Cambiar visual para indicar cuál está activo (opcional)
@@ -150,7 +151,7 @@ public class CubeManager : MonoBehaviour
         if (renderer != null)
         {
             // Hacer el cubo activo más brillante
-            if (enabled)
+            if (controlled)
             {
                 renderer.material.color = Color.white;
             }

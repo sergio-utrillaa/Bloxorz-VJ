@@ -42,13 +42,10 @@ public class BotonCruz : MonoBehaviour
             Debug.Log($"TileAnimation encontrado en botón cruz {name}, esperando animación");
             yield return new WaitForSeconds(1.29f);
             
-            // Corregir posición si está enterrado
-            if (transform.position.y < -0.5f)
-            {
-                Vector3 posicionCorrecta = new Vector3(transform.position.x, 0.0f, transform.position.z);
-                transform.position = posicionCorrecta;
-                Debug.Log($"Posición del botón cruz corregida a: {posicionCorrecta}");
-            }
+            // Siempre corregir posición Y a 0
+            Vector3 posicionCorrecta = new Vector3(transform.position.x, 0.0f, transform.position.z);
+            transform.position = posicionCorrecta;
+            Debug.Log($"Posición del botón cruz corregida a: {posicionCorrecta}");
             
             tileAnim.enabled = false;
             Debug.Log($"TileAnimation deshabilitado para botón cruz {name}");
@@ -57,6 +54,9 @@ public class BotonCruz : MonoBehaviour
         {
             yield return new WaitForEndOfFrame();
         }
+        
+        // Asegurar que el botón esté visible y activo
+        gameObject.SetActive(true);
         
         // Establecer la posición original
         originalPosition = transform.position;
@@ -67,6 +67,14 @@ public class BotonCruz : MonoBehaviour
     {
         if (other.CompareTag("Player") && !hasTriggered && Time.time - lastTriggerTime > triggerDelay)
         {
+            // ✨ NUEVO: Verificar que NO sea un cubo pequeño
+            MoveCubeSmall smallCube = other.GetComponent<MoveCubeSmall>();
+            if (smallCube != null)
+            {
+                Debug.Log("Cubo pequeño detectado en botón cruz - NO ACTIVAR");
+                return; // Los cubos pequeños no pueden activar botones cruz
+            }
+            
             // Obtener referencia al MoveCube si no la tenemos
             if (playerCube == null)
             {
