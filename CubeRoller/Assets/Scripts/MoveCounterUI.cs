@@ -22,14 +22,16 @@ public class MoveCounterUI : MonoBehaviour
     
     void Start()
     {
-        // Si no hay texto asignado, buscar en hijos
-        if (moveCountText == null)
+        // Solo actualizar si el texto ya está asignado manualmente
+        if (moveCountText != null)
         {
-            moveCountText = GetComponentInChildren<TMP_Text>();
+            // Mostrar el contador inicial
+            UpdateMoveCount(MoveCounter.Instance.GetTotalMoves());
         }
-        
-        // Mostrar el contador inicial
-        UpdateMoveCount(MoveCounter.Instance.GetTotalMoves());
+        else
+        {
+            Debug.LogWarning("MoveCounterUI: No se ha asignado un TMP_Text.");
+        }
     }
     
 
