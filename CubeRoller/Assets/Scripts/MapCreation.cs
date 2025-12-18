@@ -712,7 +712,11 @@ public class MapCreation : MonoBehaviour
     private string GetNextLevelName(string currentLevel)
     {
         // Extraer el número del nivel actual
-        if (currentLevel.StartsWith("Level_"))
+        if (currentLevel == "Level_10")
+        {
+            return "End";
+        }
+        else if (currentLevel.StartsWith("Level_"))
         {
             string numberPart = currentLevel.Substring(6); // Quitar "Level_"
             if (int.TryParse(numberPart, out int currentLevelNumber))

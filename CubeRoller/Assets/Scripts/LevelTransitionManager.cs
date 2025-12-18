@@ -53,7 +53,7 @@ public class LevelTransitionManager : MonoBehaviour
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         // Si estamos en el menú o créditos, destruir este singleton y limpiar todo
-        if (scene.name == "Menu" || scene.name == "Credits")
+        if (scene.name == "Menu" || scene.name == "Credits" || scene.name == "End")
         {
             CleanupFadePanel();
             

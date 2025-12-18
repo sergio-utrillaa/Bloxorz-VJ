@@ -36,7 +36,7 @@ public class LevelSwitcher : MonoBehaviour
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         // Si estamos en el menú o créditos, destruir este singleton
-        if (scene.name == "Menu" || scene.name == "Credits")
+        if (scene.name == "Menu" || scene.name == "Credits" || scene.name == "End")
         {
             SceneManager.sceneLoaded -= OnSceneLoaded;
             if (instance == this)
