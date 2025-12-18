@@ -2830,6 +2830,7 @@ MonoBehaviour:
   botonDivisorPrefab: {fileID: 3797884833960337822, guid: 78278cf221239bf468d732618b658aa1,
     type: 3}
   tileNaranjaPrefab: {fileID: 0}
+  tileMaterial: {fileID: 2100000, guid: c89c91ef4487d7043858a3f50572e6b1, type: 2}
   tileAnimationDuration: 0.5
   tileStartHeight: -10
   delayBetweenTiles: 0.05

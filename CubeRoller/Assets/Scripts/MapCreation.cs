@@ -20,6 +20,9 @@ public class MapCreation : MonoBehaviour
     public GameObject botonDivisorPrefab;
     public GameObject tileNaranjaPrefab;
     
+    // Material para los tiles de este nivel
+    public Material tileMaterial;
+    
     // Animation parameters
     public float tileAnimationDuration = 0.5f;  // Duration of tile rise animation
     public float tileStartHeight = -10.0f;        // Height where tiles start (below ground)
@@ -200,6 +203,12 @@ public class MapCreation : MonoBehaviour
 
                     // Set the new object parent to be the game object containing this script
                     obj.transform.parent = transform;
+                    
+                    // Aplicar el material del nivel si está disponible
+                    if (tileMaterial != null)
+                    {
+                        ApplyMaterialToTile(obj, tileMaterial);
+                    }
 
                     // Añadir el tile a la lista
                     allTiles.Add(obj);
@@ -739,6 +748,24 @@ public class MapCreation : MonoBehaviour
         }
         
         return null; // No hay más niveles
+    }
+    
+    // Método para aplicar el material a un tile y todos sus hijos
+    private void ApplyMaterialToTile(GameObject tile, Material material)
+    {
+        // Aplicar al renderer principal
+        Renderer renderer = tile.GetComponent<Renderer>();
+        if (renderer != null)
+        {
+            renderer.material = material;
+        }
+        
+        // Aplicar a todos los renderers de los hijos
+        Renderer[] childRenderers = tile.GetComponentsInChildren<Renderer>();
+        foreach (Renderer childRenderer in childRenderers)
+        {
+            childRenderer.material = material;
+        }
     }
 
 }

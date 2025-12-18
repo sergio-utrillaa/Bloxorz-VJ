@@ -1544,6 +1544,7 @@ MonoBehaviour:
     type: 3}
   tileNaranjaPrefab: {fileID: 7189405941443868808, guid: d43b8ebb405c0d141ab787a200d704b6,
     type: 3}
+  tileMaterial: {fileID: 2100000, guid: c0f58c74b73e2884d854c4d03e97f151, type: 2}
   tileAnimationDuration: 0.5
   tileStartHeight: -10
   delayBetweenTiles: 0.05
