@@ -103,20 +103,19 @@ public class OrangeTileBehavior : MonoBehaviour
     {
         Vector3 startPosition = transform.position;
         Vector3 targetPosition = new Vector3(startPosition.x, startPosition.y - 10.0f, startPosition.z);
-        float duration = 0.8f;
+        float duration = 0.8f; // Misma duración que el cubo
         float elapsedTime = 0f;
         
         Debug.Log($"Tile {gameObject.name} comenzando animación de caída desde {startPosition}");
         
-        // Pequeña pausa antes de caer
-        yield return new WaitForSeconds(0.1f);
+        // Sin pausa - caer inmediatamente junto con el cubo
         
         while (elapsedTime < duration)
         {
             elapsedTime += Time.deltaTime;
             float t = elapsedTime / duration;
             
-            // Aceleración (como gravedad)
+            // Aceleración (como gravedad) - misma curva que el cubo
             t = t * t;
             
             transform.position = Vector3.Lerp(startPosition, targetPosition, t);
