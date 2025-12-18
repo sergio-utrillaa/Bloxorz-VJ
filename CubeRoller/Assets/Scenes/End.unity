@@ -564,6 +564,7 @@ GameObject:
   - component: {fileID: 585970684}
   - component: {fileID: 585970686}
   - component: {fileID: 585970685}
+  - component: {fileID: 585970687}
   m_Layer: 5
   m_Name: MovesContainer
   m_TagString: Untagged
@@ -630,6 +631,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 585970683}
   m_CullTransparentMesh: 1
+--- !u!114 &585970687
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 585970683}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2e72c08d2084744ebdd98fa9acb509f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveCountText: {fileID: 1901179518}
 --- !u!1 &1181658719
 GameObject:
   m_ObjectHideFlags: 0
