@@ -128,11 +128,11 @@ MonoBehaviour:
   colorActivacion: {r: 0, g: 1, b: 0, a: 1}
   colorDesactivacion: {r: 1, g: 0, b: 0, a: 1}
   buttonPressSound: {fileID: 8300000, guid: 01dc1f5aba48a684faa86b9498b98cf0, type: 3}
-  bridgeActivateSound: {fileID: 8300000, guid: 0f13ffa1c3c0b0943a8d4d91b180527c, type: 3}
-  bridgeDeactivateSound: {fileID: 8300000, guid: 0f13ffa1c3c0b0943a8d4d91b180527c,
+  bridgeActivateSound: {fileID: 8300000, guid: 4000ec0ed9f9b57479c59219b9b121a2, type: 3}
+  bridgeDeactivateSound: {fileID: 8300000, guid: 4000ec0ed9f9b57479c59219b9b121a2,
     type: 3}
   soundVolume: 500
-  bridgeSoundVolume: 1
+  bridgeSoundVolume: 500
 --- !u!54 &-9112845302521902221
 Rigidbody:
   m_ObjectHideFlags: 0

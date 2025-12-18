@@ -128,3 +128,8 @@ MonoBehaviour:
   - {fileID: 8300000, guid: f958259140e2a5f4dbb92373828b6c3c, type: 3}
   fallSound: {fileID: 0}
   goalSound: {fileID: 8300000, guid: a04b6bfaed91a87489c93a2cd5a4aa9c, type: 3}
+  deathSound: {fileID: 8300000, guid: 3c8570484cd41aa4f8777b06f846c799, type: 3}
+  movementSoundVolume: 1.5
+  fallSoundVolume: 1.5
+  goalSoundVolume: 2
+  deathSoundVolume: 10

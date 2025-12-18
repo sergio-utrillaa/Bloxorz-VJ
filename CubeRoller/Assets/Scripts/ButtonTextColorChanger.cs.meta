@@ -3,7 +3,11 @@ guid: 47d7f8ca950179243b14d2715fc40d25
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - menuPassSound: {fileID: 8300000, guid: c382c7228cd77df4c88071a390d45247, type: 3}
+  - menuSelectSound: {fileID: 8300000, guid: 068b0ed526220cd428cd97c669ddf131, type: 3}
+  - legacyText: {instanceID: 0}
+  - tmpText: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

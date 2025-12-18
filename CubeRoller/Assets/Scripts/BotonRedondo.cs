@@ -23,8 +23,8 @@ public class BotonRedondo : MonoBehaviour
     public AudioClip buttonPressSound;
     public AudioClip bridgeActivateSound;   // ✨ NUEVO: Sonido al activar puente
     public AudioClip bridgeDeactivateSound; // ✨ NUEVO: Sonido al desactivar puente
-    public float soundVolume = 1.0f;
-    public float bridgeSoundVolume = 1.0f;  // ✨ NUEVO: Volumen para sonidos de puente
+    public float soundVolume = 2.0f;
+    public float bridgeSoundVolume = 2.0f;  // ✨ NUEVO: Volumen para sonidos de puente
     
     void Start()
     {
