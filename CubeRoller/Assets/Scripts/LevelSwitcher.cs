@@ -35,6 +35,18 @@ public class LevelSwitcher : MonoBehaviour
     // Llamado cuando se carga una nueva escena
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
+        // Si estamos en el menú o créditos, destruir este singleton
+        if (scene.name == "Menu" || scene.name == "Credits")
+        {
+            SceneManager.sceneLoaded -= OnSceneLoaded;
+            if (instance == this)
+            {
+                instance = null;
+            }
+            Destroy(gameObject);
+            return;
+        }
+        
         // Forzar actualización de la iluminación
         DynamicGI.UpdateEnvironment();
         
@@ -157,6 +169,11 @@ public class LevelSwitcher : MonoBehaviour
     public void StartLevel1()
     {
         LoadLevel(1);
+    }
+
+    public void LoadMenu()
+    {
+        SceneManager.LoadScene("Menu", LoadSceneMode.Single);
     }
     
     bool LevelExists(string levelName)
