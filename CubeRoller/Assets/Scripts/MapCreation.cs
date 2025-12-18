@@ -51,11 +51,37 @@ public class MapCreation : MonoBehaviour
     private List<GameObject> allTiles = new List<GameObject>(); // Lista de todos los tiles creados
     private List<GameObject> allBridges = new List<GameObject>();
 
+    // Audio de spawn del cubo
+    [Header("Audio de Spawn")]
+    public AudioClip cubeSpawnSound;
+    
+    [Range(0f, 10.0f)]
+    public float spawnSoundVolume = 10.0f;
+    
+    // Audio de nivel completado
+    [Header("Audio de Victoria")]
+    public AudioClip levelCompletedSound;
+    
+    [Range(0f, 1.0f)]
+    [Tooltip("Volumen del sonido de victoria")]
+    public float levelCompletedSoundVolume = 0.5f;
+    
+    // ✨ NUEVO: Audio de muerte para tiles naranjas
+    [Header("Audio de Tiles Naranjas")]
+    public AudioClip orangeTileDeathSound;
+    
+    [Range(0f, 10.0f)]
+    [Tooltip("Volumen del sonido de muerte en tiles naranjas")]
+    public float orangeTileDeathVolume = 5.0f;
+
     // Start is called once after the MonoBehaviour is created
     void Start()
     {
         Time.timeScale = 1.0f;
         
+        // Reproducir música del nivel
+        MusicManager.Instance.PlayMusicForCurrentScene();
+    
         // Determinar si es la primera vez en el nivel
         bool isFirstTime = LevelTransitionManager.Instance.IsFirstTimeInLevel();
         
@@ -294,7 +320,11 @@ public class MapCreation : MonoBehaviour
                     // Añadir el script que detecta si el cubo está vertical
                     OrangeTileBehavior orangeBehavior = orangeTile.AddComponent<OrangeTileBehavior>();
                     
-                    Debug.Log($"Tile naranja creado en posición: ({xFlipped}, {z})");
+                    // ✨ NUEVO: Asignar el audio de muerte al tile naranja
+                    orangeBehavior.deathSound = orangeTileDeathSound;
+                    orangeBehavior.deathSoundVolume = orangeTileDeathVolume;
+                    
+                    Debug.Log($"Tile naranja creado en posición: ({xFlipped}, {z}). Audio asignado: {(orangeTileDeathSound != null ? orangeTileDeathSound.name : "NULL")}");
                 }
                 else if (tileValue == 3) // Tile de meta (invisible - simula un agujero)
                 {
@@ -362,9 +392,22 @@ public class MapCreation : MonoBehaviour
             cubeAnim.StartFallAnimation(cubeFallDuration, cubeSpawnHeight);
             
             cubeSpawned = true;
-            
+
             // Activar los puentes después de que termine la animación de tiles
             ActivateBridges();
+
+            StartCoroutine(SpawnCubeSound());
+        }
+    }
+
+    IEnumerator SpawnCubeSound() {
+        yield return new WaitForSeconds(0.7f);
+
+        // Reproducir sonido de spawn del cubo
+        if (cubeSpawnSound != null)
+        {
+            AudioSource.PlayClipAtPoint(cubeSpawnSound, cube.transform.position, spawnSoundVolume);
+            Debug.Log("Sonido de spawn reproducido para el cubo");
         }
     }
     
@@ -539,6 +582,13 @@ public class MapCreation : MonoBehaviour
     // Corrutina para animar la victoria
     IEnumerator AnimateVictory()
     {
+        // Reproducir sonido de victoria al inicio de la animación
+        if (levelCompletedSound != null)
+        {
+            AudioSource.PlayClipAtPoint(levelCompletedSound, Camera.main.transform.position, levelCompletedSoundVolume);
+            Debug.Log("Sonido de nivel completado reproducido");
+        }
+        
         float maxRiseDelay = 0f;
         
         // Combinar tiles, puentes y botones en una sola lista

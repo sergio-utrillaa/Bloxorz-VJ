@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 0171e8c2c58d00d45b68f6fadfc44f73
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - menuMusic: {fileID: 8300000, guid: 3232a4c497f35b7468b30944965861dc, type: 3}
+  - bosqueMusic: {fileID: 8300000, guid: d54b37a8dcd18b34d9f4aafc156e8f4a, type: 3}
+  - playaMusic: {fileID: 8300000, guid: 1e41d62647bfb31468616a3a5e4bb42c, type: 3}
+  - desiertoMusic: {fileID: 8300000, guid: 34bca42eb03b934469d0ff8b8a534bb7, type: 3}
+  - nieveMusic: {fileID: 8300000, guid: cf8ad8348b878574e976cee11dd93c75, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

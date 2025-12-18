@@ -9,6 +9,15 @@ public class CubeSpawnAnimation : MonoBehaviour
     private float animationDuration;
     private bool isAnimating = false;
     private MoveCube moveCubeComponent;
+    
+    // Audio de spawn
+    public AudioClip spawnSound;
+    
+    [Range(0f, 3f)]
+    [Tooltip("Volumen del sonido de spawn")]
+    public float spawnSoundVolume = 1.5f;
+
+    private bool hasPlayedSound = false; // Para controlar la reproducción del sonido
 
     public void StartFallAnimation(float duration, float startHeight)
     {
@@ -43,6 +52,14 @@ public class CubeSpawnAnimation : MonoBehaviour
             if (t >= 1f)
             {
                 isAnimating = false;
+                
+                // Reproducir sonido cuando toca el suelo
+                if (spawnSound != null && !hasPlayedSound)
+                {
+                    AudioSource.PlayClipAtPoint(spawnSound, transform.position, spawnSoundVolume);
+                    Debug.Log($"Reproduciendo sonido de spawn al tocar el suelo en {transform.position}");
+                    hasPlayedSound = true;
+                }
                 
                 // Re-enable MoveCube component after animation
                 if (moveCubeComponent != null)

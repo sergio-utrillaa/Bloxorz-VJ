@@ -447,6 +447,54 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2024f3efc1a3b214493fe8734ced46be, type: 3}
+--- !u!1 &262243184
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 262243186}
+  - component: {fileID: 262243185}
+  m_Layer: 0
+  m_Name: MenuAudioManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &262243185
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 262243184}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d7df787acf463345ac328db9a84159a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  menuPassSound: {fileID: 8300000, guid: c382c7228cd77df4c88071a390d45247, type: 3}
+  menuSelectSound: {fileID: 8300000, guid: 068b0ed526220cd428cd97c669ddf131, type: 3}
+  passVolume: 0.5
+  selectVolume: 0.7
+--- !u!4 &262243186
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 262243184}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 18.287178, y: 5.7754188, z: 15.630939}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &330585543
 GameObject:
   m_ObjectHideFlags: 0
@@ -1059,11 +1107,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1946183870}
     m_Modifications:
-    - target: {fileID: 9027158549299997483, guid: 5d1d5062536989244a2c2c706ea31f17,
-        type: 3}
-      propertyPath: m_Layer
-      value: 3
-      objectReference: {fileID: 0}
     - target: {fileID: 580245097941838370, guid: d09e840b4a753314f83ecec3a5ffa994,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1128,6 +1171,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_IsActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9027158549299997483, guid: 5d1d5062536989244a2c2c706ea31f17,
+        type: 3}
+      propertyPath: m_Layer
+      value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1298,6 +1346,57 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 667878374}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &912009455
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 912009457}
+  - component: {fileID: 912009456}
+  m_Layer: 0
+  m_Name: MusicManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &912009456
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 912009455}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0171e8c2c58d00d45b68f6fadfc44f73, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  menuMusic: {fileID: 8300000, guid: 3232a4c497f35b7468b30944965861dc, type: 3}
+  bosqueMusic: {fileID: 8300000, guid: d54b37a8dcd18b34d9f4aafc156e8f4a, type: 3}
+  playaMusic: {fileID: 8300000, guid: 1e41d62647bfb31468616a3a5e4bb42c, type: 3}
+  desiertoMusic: {fileID: 8300000, guid: 34bca42eb03b934469d0ff8b8a534bb7, type: 3}
+  nieveMusic: {fileID: 8300000, guid: cf8ad8348b878574e976cee11dd93c75, type: 3}
+  musicVolume: 0.358
+  fadeDuration: 1
+--- !u!4 &912009457
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 912009455}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 18.287178, y: 5.7754188, z: 15.630939}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1022743896
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1306,11 +1405,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1946183870}
     m_Modifications:
-    - target: {fileID: 9027158549299997483, guid: 5d1d5062536989244a2c2c706ea31f17,
-        type: 3}
-      propertyPath: m_Layer
-      value: 3
-      objectReference: {fileID: 0}
     - target: {fileID: 580245097941838370, guid: d09e840b4a753314f83ecec3a5ffa994,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1376,6 +1470,11 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 9027158549299997483, guid: 5d1d5062536989244a2c2c706ea31f17,
+        type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1395,11 +1494,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1946183870}
     m_Modifications:
-    - target: {fileID: 9027158549299997483, guid: 5d1d5062536989244a2c2c706ea31f17,
-        type: 3}
-      propertyPath: m_Layer
-      value: 3
-      objectReference: {fileID: 0}
     - target: {fileID: 580245097941838370, guid: d09e840b4a753314f83ecec3a5ffa994,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1464,6 +1558,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_IsActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9027158549299997483, guid: 5d1d5062536989244a2c2c706ea31f17,
+        type: 3}
+      propertyPath: m_Layer
+      value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1594,6 +1693,10 @@ MonoBehaviour:
   tileRiseHeight: 15
   delayBetweenRiseTiles: 0.02
   fadeOutDuration: 1
+  cubeSpawnSound: {fileID: 8300000, guid: f0a0e23310542034b805750e86e63628, type: 3}
+  spawnSoundVolume: 10
+  levelCompletedSound: {fileID: 8300000, guid: 09d833d35df13c0408dc4955dcb5d3a2, type: 3}
+  levelCompletedSoundVolume: 0.5
 --- !u!114 &1325002401
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1971,3 +2074,5 @@ SceneRoots:
   - {fileID: 205670638}
   - {fileID: 1946183870}
   - {fileID: 1163149287}
+  - {fileID: 912009457}
+  - {fileID: 262243186}

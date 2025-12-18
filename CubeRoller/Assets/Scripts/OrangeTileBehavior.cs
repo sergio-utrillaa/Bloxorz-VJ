@@ -4,6 +4,10 @@ using UnityEngine;
 public class OrangeTileBehavior : MonoBehaviour
 {
     private bool isFalling = false;
+    public AudioClip deathSound;    // Sonido cuando el cubo cae de la plataforma
+    [Range(0f, 10.0f)]
+    [Tooltip("Volumen del sonido de muerte")]
+    public float deathSoundVolume = 10.0f;
     
     void Start()
     {
@@ -97,6 +101,43 @@ public class OrangeTileBehavior : MonoBehaviour
         
         // Hacer que el tile naranja también caiga
         StartCoroutine(FallAnimation());
+
+        StartCoroutine(waitDeathSound());
+    }
+
+    IEnumerator waitDeathSound()
+    {
+        yield return new WaitForSeconds(0.7f);
+
+        // Reproducir sonido de muerte ANTES de iniciar las animaciones
+        PlayDeathSound();
+    }
+    
+    // ✨ NUEVO: Método para reproducir el sonido de muerte
+    void PlayDeathSound()
+    {
+        if (deathSound != null)
+        {
+            // Crear un AudioSource temporal con configuración robusta
+            GameObject tempAudio = new GameObject("OrangeTileDeathSound");
+            tempAudio.transform.position = transform.position;
+            
+            AudioSource audioSource = tempAudio.AddComponent<AudioSource>();
+            audioSource.clip = deathSound;
+            audioSource.volume = 1f; // Siempre usar volumen máximo del AudioSource
+            audioSource.spatialBlend = 0f; // 2D para que se escuche bien en todas partes
+            audioSource.playOnAwake = false;
+            audioSource.Play();
+            
+            Debug.Log($"✅ [OrangeTileBehavior] Reproduciendo sonido de muerte: {deathSound.name}, Volumen: {audioSource.volume}, Clip length: {deathSound.length}s");
+            
+            // Destruir el GameObject después de que termine el sonido
+            Destroy(tempAudio, deathSound.length + 0.5f);
+        }
+        else
+        {
+            Debug.LogError("❌ [OrangeTileBehavior] No hay sonido de muerte asignado!");
+        }
     }
     
     IEnumerator FallAnimation()

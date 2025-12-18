@@ -49,7 +49,28 @@ public class MoveCube : MonoBehaviour
     public AudioClip[] sounds; 		// Sounds to play when the cube rotates
     public AudioClip fallSound; 	// Sound to play when the cube starts falling
     public AudioClip goalSound;     // Sonido al llegar a la meta
+    public AudioClip deathSound;    // Sonido cuando el cubo cae de la plataforma
 
+    // Variables para controlar volumen
+    [Header("Configuración de Audio")]
+    [Range(0f, 3f)]
+    [Tooltip("Volumen de los sonidos de movimiento")]
+    public float movementSoundVolume = 1.5f;
+    
+    [Range(0f, 3f)]
+    [Tooltip("Volumen del sonido de caída")]
+    public float fallSoundVolume = 1.5f;
+    
+    [Range(0f, 3f)]
+    [Tooltip("Volumen del sonido de meta")]
+    public float goalSoundVolume = 2.0f;
+    
+    [Range(0f, 10.0f)]
+    [Tooltip("Volumen del sonido de muerte")]
+    public float deathSoundVolume = 10.0f;
+
+    // Variable para evitar reproducir el sonido múltiples veces
+    private bool hasPlayedDeathSound = false;
 
     enum CubeState { Vertical, HorizontalX, HorizontalZ }
     CubeState state = CubeState.Vertical;
@@ -69,6 +90,7 @@ public class MoveCube : MonoBehaviour
         edgeRotationRemaining = 0f;
         currentFallSpeed = fallSpeed;
         lastMoveDirection = Vector2.zero;
+        hasPlayedDeathSound = false;
     }
 
     // Method to check if cube is in vertical position
@@ -328,7 +350,7 @@ public class MoveCube : MonoBehaviour
 
             if (goalSound != null)
             {
-                AudioSource.PlayClipAtPoint(goalSound, transform.position, 1.5f);
+                AudioSource.PlayClipAtPoint(goalSound, transform.position, 2.0f);
             }
             
             // Añadir componente de animación de meta
@@ -366,7 +388,7 @@ public class MoveCube : MonoBehaviour
             return;
         }
 
-        // ✨ MODIFICADO: Gestionar el cooldown (cancelar si no está en el suelo)
+        // Gestionar el cooldown (cancelar si no está en el suelo)
         if (bCooldown)
         {
             // Si el cubo no está en el suelo, cancelar el cooldown inmediatamente
@@ -479,6 +501,14 @@ public class MoveCube : MonoBehaviour
             if (transform.position.y < -5.0f && !hasFallen)
             {
                 hasFallen = true;
+
+                // Reproducir sonido de muerte
+                if (deathSound != null && !hasPlayedDeathSound)
+                {
+                    AudioSource.PlayClipAtPoint(deathSound, transform.position, deathSoundVolume);
+                    hasPlayedDeathSound = true;
+                }
+
                 // Notificar al MapCreation que el cubo se ha caído
                 MapCreation mapCreation = FindObjectOfType<MapCreation>();
                 if (mapCreation != null)
@@ -515,15 +545,18 @@ public class MoveCube : MonoBehaviour
                 bFalling = true;
                 currentFallSpeed = fallSpeed; // Start falling from zero speed
                 
-                // ✨ NUEVO: Cancelar cooldown si empieza a caer
+                // Cancelar cooldown si empieza a caer
                 bCooldown = false;
                 cooldownTimer = 0f;
                 
                 // Configurar la rotación de caída según el lado sin soporte
                 SetupFallRotation();
-				
-				// Play sound associated to falling
-                AudioSource.PlayClipAtPoint(fallSound, transform.position, 1.5f);
+                
+                /*// Reproducir sonido de caída (no el de muerte todavía)
+                if (fallSound != null)
+                {
+                    AudioSource.PlayClipAtPoint(fallSound, transform.position, fallSoundVolume);
+                }*/
             }
 
             // Read the move action for input
@@ -531,7 +564,7 @@ public class MoveCube : MonoBehaviour
             dir.Normalize();
             if(Math.Abs(dir.x) > 0.99 || Math.Abs(dir.y) > 0.99)
             {
-				// If the absolute value of one of the axis is larger than 0.99, the player wants to move in a non diagonal direction
+                // If the absolute value of one of the axis is larger than 0.99, the player wants to move in a non diagonal direction
                 bMoving = true;
                 stateBeforeMove = state; // Guardar el estado antes del movimiento
                 lastMoveDirection = dir; // Guardar la dirección del movimiento
@@ -540,8 +573,8 @@ public class MoveCube : MonoBehaviour
                 
                 // We play a random movemnt sound
                 int iSound = UnityEngine.Random.Range(0, sounds.Length);
-                AudioSource.PlayClipAtPoint(sounds[iSound], transform.position, 1.0f);
-
+                AudioSource.PlayClipAtPoint(sounds[iSound], transform.position, movementSoundVolume);
+                
                 // Set rotDir, rotRemainder, rotPoint, and rotAxis according to the movement the player wants to make
                 if (dir.x > 0.99)
                 {
