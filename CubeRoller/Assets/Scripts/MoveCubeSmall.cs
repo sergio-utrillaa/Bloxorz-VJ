@@ -29,8 +29,17 @@ public class MoveCubeSmall : MonoBehaviour
     float fallRotDir;
     Vector3 fallDirection;  // Direction of movement that caused the fall
     
+    private AudioSource audioSource;
     public AudioClip[] sounds;
     public AudioClip fallSound;
+    public AudioClip deathSound;    // Sonido cuando el cubo cae de la plataforma
+    
+    [Range(0f, 10.0f)]
+    [Tooltip("Volumen del sonido de muerte")]
+    public float deathSoundVolume = 10.0f;
+
+    // Variable para evitar reproducir el sonido múltiples veces
+    private bool hasPlayedDeathSound = false;
     
     // Method to check if cube is currently moving or falling
     public bool IsMoving()
@@ -53,6 +62,16 @@ public class MoveCubeSmall : MonoBehaviour
     void Start()
     {
         layerMask = LayerMask.GetMask("Ground");
+
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null)
+        {
+            audioSource = gameObject.AddComponent<AudioSource>();
+        }
+        
+        // Configurar AudioSource
+        audioSource.playOnAwake = false;
+        audioSource.spatialBlend = 0f; // 2D sound
     }
     
     void Update()
@@ -119,6 +138,14 @@ public class MoveCubeSmall : MonoBehaviour
             if (transform.position.y < -10.0f && !hasFallen)
             {
                 hasFallen = true;
+
+                // Reproducir sonido de muerte
+                if (deathSound != null && !hasPlayedDeathSound)
+                {
+                    AudioSource.PlayClipAtPoint(deathSound, transform.position, deathSoundVolume);
+                    hasPlayedDeathSound = true;
+                }
+
                 // Notificar al MapCreation que el cubo se ha caído
                 MapCreation mapCreation = FindObjectOfType<MapCreation>();
                 if (mapCreation != null)
