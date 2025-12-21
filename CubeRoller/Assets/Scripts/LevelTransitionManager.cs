@@ -32,9 +32,37 @@ public class LevelTransitionManager : MonoBehaviour
         {
             instance = this;
             DontDestroyOnLoad(gameObject);
+            
+            // Suscribirse a eventos de carga de escena para limpiar el panel
+            SceneManager.sceneLoaded += OnSceneLoaded;
         }
         else if (instance != this)
         {
+            Destroy(gameObject);
+        }
+    }
+    
+    void OnDestroy()
+    {
+        if (instance == this)
+        {
+            SceneManager.sceneLoaded -= OnSceneLoaded;
+        }
+    }
+    
+    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        // Si estamos en el menú o créditos, destruir este singleton y limpiar todo
+        if (scene.name == "Menu" || scene.name == "Credits" || scene.name == "End")
+        {
+            CleanupFadePanel();
+            
+            // Destruir el singleton ya que no se necesita en el menú
+            SceneManager.sceneLoaded -= OnSceneLoaded;
+            if (instance == this)
+            {
+                instance = null;
+            }
             Destroy(gameObject);
         }
     }
@@ -129,12 +157,8 @@ public class LevelTransitionManager : MonoBehaviour
 
         fadeImage.color = new Color(0, 0, 0, 0);
         
-        // Destruir panel después del fade
-        if (fadePanel != null)
-        {
-            Destroy(fadePanel);
-            fadePanel = null;
-        }
+        // IMPORTANTE: Destruir panel después del fade
+        CleanupFadePanel();
     }
 
     // Crear panel de fade
@@ -148,12 +172,17 @@ public class LevelTransitionManager : MonoBehaviour
         Canvas canvas = fadePanel.AddComponent<Canvas>();
         canvas.renderMode = RenderMode.ScreenSpaceOverlay;
         canvas.sortingOrder = 10000; // Asegurar que esté sobre todo
+        
+        // Añadir CanvasGroup para controlar la interacción
+        CanvasGroup canvasGroup = fadePanel.AddComponent<CanvasGroup>();
+        canvasGroup.blocksRaycasts = true; // Bloquea interacción durante el fade
 
         fadeImage = fadePanel.AddComponent<Image>();
         fadeImage.color = new Color(0, 0, 0, 1);
         fadeImage.rectTransform.anchorMin = Vector2.zero;
         fadeImage.rectTransform.anchorMax = Vector2.one;
         fadeImage.rectTransform.sizeDelta = Vector2.zero;
+        fadeImage.raycastTarget = true; // Asegurar que bloquee clics
     }
 
     // Crear texto de Stage

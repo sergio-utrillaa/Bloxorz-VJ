@@ -35,6 +35,7 @@ public class ButtonTextColorChanger : MonoBehaviour, IPointerEnterHandler, IPoin
     private bool isMoving = false;
     private bool positionCaptured = false;
     private SceneTransitionAnimator sceneAnimator;
+    private Button button;
     
     void Start()
     {
@@ -65,6 +66,18 @@ public class ButtonTextColorChanger : MonoBehaviour, IPointerEnterHandler, IPoin
         }
         
         targetColor = normalTextColor;
+        
+        // Buscar componente Button y añadir listener para el clic
+        button = GetComponent<Button>();
+        if (button != null)
+        {
+            button.onClick.AddListener(OnButtonClick);
+            Debug.Log($"[ButtonTextColorChanger] Listener añadido al botón {gameObject.name}");
+        }
+        else
+        {
+            Debug.LogWarning($"[ButtonTextColorChanger] No se encontró Button en {gameObject.name}");
+        }
         
         // Capturar posición original después de que el layout group haya calculado posiciones
         StartCoroutine(CaptureOriginalPositionAfterLayout());
@@ -132,22 +145,37 @@ public class ButtonTextColorChanger : MonoBehaviour, IPointerEnterHandler, IPoin
     
     public void OnPointerEnter(PointerEventData eventData)
     {
+        Debug.Log($"[ButtonTextColorChanger] OnPointerEnter en {gameObject.name}");
+        
         StartFade(hoverTextColor);
         
         if (enableMovement && rectTransform != null && positionCaptured)
         {
             StartMove(originalPosition + new Vector2(0, moveUpDistance));
         }
+        
+        // Reproducir sonido usando MenuAudioManager
+        MenuAudioManager.PlayPassSound();
     }
     
     public void OnPointerExit(PointerEventData eventData)
     {
+        Debug.Log($"[ButtonTextColorChanger] OnPointerExit en {gameObject.name}");
+        
         StartFade(normalTextColor);
         
         if (enableMovement && rectTransform != null && positionCaptured)
         {
             StartMove(originalPosition);
         }
+    }
+    
+    void OnButtonClick()
+    {
+        Debug.Log($"[ButtonTextColorChanger] OnButtonClick en {gameObject.name}");
+        
+        // Reproducir sonido usando MenuAudioManager
+        MenuAudioManager.PlaySelectSound();
     }
     
     private void StartFade(Color target)
@@ -174,6 +202,14 @@ public class ButtonTextColorChanger : MonoBehaviour, IPointerEnterHandler, IPoin
         if (tmpText != null)
         {
             tmpText.color = color;
+        }
+    }
+    
+    void OnDestroy()
+    {
+        if (button != null)
+        {
+            button.onClick.RemoveListener(OnButtonClick);
         }
     }
 }

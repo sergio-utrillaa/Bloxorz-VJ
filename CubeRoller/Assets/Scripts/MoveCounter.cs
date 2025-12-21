@@ -1,4 +1,6 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using System;
 
 public class MoveCounter : MonoBehaviour
 {
@@ -7,6 +9,9 @@ public class MoveCounter : MonoBehaviour
     private int currentLevelMoves = 0;  // Movimientos en el nivel actual
     private int totalMoves = 0;         // Movimientos totales acumulados
     private int levelStartMoves = 0;    // Movimientos con los que empezó el nivel actual
+    
+    // Evento que se dispara cuando cambia el contador
+    public static event Action<int> OnMovesChanged;
     
     public static MoveCounter Instance
     {
@@ -28,9 +33,35 @@ public class MoveCounter : MonoBehaviour
         {
             instance = this;
             DontDestroyOnLoad(gameObject);
+            
+            // Suscribirse a cambios de escena
+            SceneManager.sceneLoaded += OnSceneLoaded;
         }
         else if (instance != this)
         {
+            Destroy(gameObject);
+        }
+    }
+    
+    void OnDestroy()
+    {
+        if (instance == this)
+        {
+            SceneManager.sceneLoaded -= OnSceneLoaded;
+            instance = null;
+        }
+    }
+    
+    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        // Si estamos en el menú o créditos, destruir este singleton
+        if (scene.name == "Menu" || scene.name == "Credits")
+        {
+            SceneManager.sceneLoaded -= OnSceneLoaded;
+            if (instance == this)
+            {
+                instance = null;
+            }
             Destroy(gameObject);
         }
     }
@@ -41,12 +72,8 @@ public class MoveCounter : MonoBehaviour
         currentLevelMoves++;
         totalMoves++;
         
-        // Actualizar UI
-        MoveCounterUI ui = FindObjectOfType<MoveCounterUI>();
-        if (ui != null)
-        {
-            ui.UpdateMoveCount(totalMoves);
-        }
+        // Notificar a todos los listeners
+        OnMovesChanged?.Invoke(totalMoves);
         
         Debug.Log($"Movimiento registrado. Nivel: {currentLevelMoves}, Total: {totalMoves}");
     }
@@ -69,12 +96,8 @@ public class MoveCounter : MonoBehaviour
         totalMoves = levelStartMoves;
         currentLevelMoves = 0;
         
-        // Actualizar UI
-        MoveCounterUI ui = FindObjectOfType<MoveCounterUI>();
-        if (ui != null)
-        {
-            ui.UpdateMoveCount(totalMoves);
-        }
+        // Notificar a todos los listeners
+        OnMovesChanged?.Invoke(totalMoves);
         
         Debug.Log($"Nivel reiniciado. Movimientos totales restaurados a: {totalMoves}");
     }
@@ -95,12 +118,8 @@ public class MoveCounter : MonoBehaviour
         totalMoves = 0;
         levelStartMoves = 0;
         
-        // Actualizar UI
-        MoveCounterUI ui = FindObjectOfType<MoveCounterUI>();
-        if (ui != null)
-        {
-            ui.UpdateMoveCount(totalMoves);
-        }
+        // Notificar a todos los listeners
+        OnMovesChanged?.Invoke(totalMoves);
         
         Debug.Log("Progreso completo reseteado");
     }

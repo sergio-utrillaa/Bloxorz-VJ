@@ -7,6 +7,7 @@ public class MoveCubeSmall : MonoBehaviour
     bool bMoving = false;
     bool bFalling = false;
     bool bCooldown = false;         // ✨ NUEVO: Está en pausa después de un movimiento?
+    private bool isControlled = true; // ✨ NUEVO: ¿Este cubo está siendo controlado por el jugador?
     
     public float rotSpeed = 360.0f;
     public float fallSpeed = 10f;             // Maximum fall speed
@@ -28,13 +29,28 @@ public class MoveCubeSmall : MonoBehaviour
     float fallRotDir;
     Vector3 fallDirection;  // Direction of movement that caused the fall
     
+    private AudioSource audioSource;
     public AudioClip[] sounds;
     public AudioClip fallSound;
+    public AudioClip deathSound;    // Sonido cuando el cubo cae de la plataforma
+    
+    [Range(0f, 10.0f)]
+    [Tooltip("Volumen del sonido de muerte")]
+    public float deathSoundVolume = 10.0f;
+
+    // Variable para evitar reproducir el sonido múltiples veces
+    private bool hasPlayedDeathSound = false;
     
     // Method to check if cube is currently moving or falling
     public bool IsMoving()
     {
         return bMoving || bFalling;
+    }
+    
+    // ✨ NUEVO: Método para establecer si este cubo está siendo controlado
+    public void SetControlled(bool controlled)
+    {
+        isControlled = controlled;
     }
     
     bool isGrounded()
@@ -46,6 +62,16 @@ public class MoveCubeSmall : MonoBehaviour
     void Start()
     {
         layerMask = LayerMask.GetMask("Ground");
+
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null)
+        {
+            audioSource = gameObject.AddComponent<AudioSource>();
+        }
+        
+        // Configurar AudioSource
+        audioSource.playOnAwake = false;
+        audioSource.spatialBlend = 0f; // 2D sound
     }
     
     void Update()
@@ -112,6 +138,14 @@ public class MoveCubeSmall : MonoBehaviour
             if (transform.position.y < -10.0f && !hasFallen)
             {
                 hasFallen = true;
+
+                // Reproducir sonido de muerte
+                if (deathSound != null && !hasPlayedDeathSound)
+                {
+                    AudioSource.PlayClipAtPoint(deathSound, transform.position, deathSoundVolume);
+                    hasPlayedDeathSound = true;
+                }
+
                 // Notificar al MapCreation que el cubo se ha caído
                 MapCreation mapCreation = FindObjectOfType<MapCreation>();
                 if (mapCreation != null)
@@ -140,6 +174,7 @@ public class MoveCubeSmall : MonoBehaviour
         }
         else
         {
+            // ✨ NUEVO: Verificar caída SIEMPRE, independientemente de si está controlado
             if (!isGrounded())
             {
                 bFalling = true;
@@ -156,7 +191,12 @@ public class MoveCubeSmall : MonoBehaviour
                 {
                     AudioSource.PlayClipAtPoint(fallSound, transform.position, 1.5f);
                 }
+                
+                return; // Salir inmediatamente para empezar a caer
             }
+            
+            // ✨ NUEVO: Solo procesar input si este cubo está siendo controlado
+            if (!isControlled) return;
             
             Vector2 dir = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
             dir.Normalize();
@@ -213,7 +253,7 @@ public class MoveCubeSmall : MonoBehaviour
     void SetupFallRotation()
     {
         // Si no hay dirección guardada, no rotar al caer
-        if (fallDirection == Vector3.zero)
+        if (fallDirection == Vector3.zero || isControlled == false)
         {
             fallRotAxis = Vector3.zero;
             return;

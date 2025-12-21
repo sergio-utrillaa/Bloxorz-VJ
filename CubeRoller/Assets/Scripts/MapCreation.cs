@@ -20,6 +20,9 @@ public class MapCreation : MonoBehaviour
     public GameObject botonDivisorPrefab;
     public GameObject tileNaranjaPrefab;
     
+    // Material para los tiles de este nivel
+    public Material tileMaterial;
+    
     // Animation parameters
     public float tileAnimationDuration = 0.5f;  // Duration of tile rise animation
     public float tileStartHeight = -10.0f;        // Height where tiles start (below ground)
@@ -51,11 +54,37 @@ public class MapCreation : MonoBehaviour
     private List<GameObject> allTiles = new List<GameObject>(); // Lista de todos los tiles creados
     private List<GameObject> allBridges = new List<GameObject>();
 
+    // Audio de spawn del cubo
+    [Header("Audio de Spawn")]
+    public AudioClip cubeSpawnSound;
+    
+    [Range(0f, 10.0f)]
+    public float spawnSoundVolume = 10.0f;
+    
+    // Audio de nivel completado
+    [Header("Audio de Victoria")]
+    public AudioClip levelCompletedSound;
+    
+    [Range(0f, 1.0f)]
+    [Tooltip("Volumen del sonido de victoria")]
+    public float levelCompletedSoundVolume = 0.5f;
+    
+    // ✨ NUEVO: Audio de muerte para tiles naranjas
+    [Header("Audio de Tiles Naranjas")]
+    public AudioClip orangeTileDeathSound;
+    
+    [Range(0f, 10.0f)]
+    [Tooltip("Volumen del sonido de muerte en tiles naranjas")]
+    public float orangeTileDeathVolume = 5.0f;
+
     // Start is called once after the MonoBehaviour is created
     void Start()
     {
         Time.timeScale = 1.0f;
         
+        // Reproducir música del nivel
+        MusicManager.Instance.PlayMusicForCurrentScene();
+    
         // Determinar si es la primera vez en el nivel
         bool isFirstTime = LevelTransitionManager.Instance.IsFirstTimeInLevel();
         
@@ -200,6 +229,12 @@ public class MapCreation : MonoBehaviour
 
                     // Set the new object parent to be the game object containing this script
                     obj.transform.parent = transform;
+                    
+                    // Aplicar el material del nivel si está disponible
+                    if (tileMaterial != null)
+                    {
+                        ApplyMaterialToTile(obj, tileMaterial);
+                    }
 
                     // Añadir el tile a la lista
                     allTiles.Add(obj);
@@ -294,7 +329,11 @@ public class MapCreation : MonoBehaviour
                     // Añadir el script que detecta si el cubo está vertical
                     OrangeTileBehavior orangeBehavior = orangeTile.AddComponent<OrangeTileBehavior>();
                     
-                    Debug.Log($"Tile naranja creado en posición: ({xFlipped}, {z})");
+                    // ✨ NUEVO: Asignar el audio de muerte al tile naranja
+                    orangeBehavior.deathSound = orangeTileDeathSound;
+                    orangeBehavior.deathSoundVolume = orangeTileDeathVolume;
+                    
+                    Debug.Log($"Tile naranja creado en posición: ({xFlipped}, {z}). Audio asignado: {(orangeTileDeathSound != null ? orangeTileDeathSound.name : "NULL")}");
                 }
                 else if (tileValue == 3) // Tile de meta (invisible - simula un agujero)
                 {
@@ -306,11 +345,18 @@ public class MapCreation : MonoBehaviour
                     goalTile.name = $"GoalTile_{x}_{z}";
                     goalTile.tag = "Goal"; // Importante: asignar tag Goal
                     
-                    // Hacer el tile invisible
+                    // Hacer el tile invisible (incluyendo todos sus hijos)
                     Renderer renderer = goalTile.GetComponent<Renderer>();
                     if (renderer != null)
                     {
                         renderer.enabled = false; // Desactivar el renderer para hacerlo invisible
+                    }
+                    
+                    // Desactivar también los renderers de todos los hijos
+                    Renderer[] childRenderers = goalTile.GetComponentsInChildren<Renderer>();
+                    foreach (Renderer childRenderer in childRenderers)
+                    {
+                        childRenderer.enabled = false;
                     }
                     
                     // NO añadir el tile de meta a la lista de tiles para que no se anime ni caiga
@@ -355,9 +401,22 @@ public class MapCreation : MonoBehaviour
             cubeAnim.StartFallAnimation(cubeFallDuration, cubeSpawnHeight);
             
             cubeSpawned = true;
-            
+
             // Activar los puentes después de que termine la animación de tiles
             ActivateBridges();
+
+            StartCoroutine(SpawnCubeSound());
+        }
+    }
+
+    IEnumerator SpawnCubeSound() {
+        yield return new WaitForSeconds(0.7f);
+
+        // Reproducir sonido de spawn del cubo
+        if (cubeSpawnSound != null)
+        {
+            AudioSource.PlayClipAtPoint(cubeSpawnSound, cube.transform.position, spawnSoundVolume);
+            Debug.Log("Sonido de spawn reproducido para el cubo");
         }
     }
     
@@ -532,6 +591,13 @@ public class MapCreation : MonoBehaviour
     // Corrutina para animar la victoria
     IEnumerator AnimateVictory()
     {
+        // Reproducir sonido de victoria al inicio de la animación
+        if (levelCompletedSound != null)
+        {
+            AudioSource.PlayClipAtPoint(levelCompletedSound, Camera.main.transform.position, levelCompletedSoundVolume);
+            Debug.Log("Sonido de nivel completado reproducido");
+        }
+        
         float maxRiseDelay = 0f;
         
         // Combinar tiles, puentes y botones en una sola lista
@@ -705,7 +771,11 @@ public class MapCreation : MonoBehaviour
     private string GetNextLevelName(string currentLevel)
     {
         // Extraer el número del nivel actual
-        if (currentLevel.StartsWith("Level_"))
+        if (currentLevel == "Level_10")
+        {
+            return "End";
+        }
+        else if (currentLevel.StartsWith("Level_"))
         {
             string numberPart = currentLevel.Substring(6); // Quitar "Level_"
             if (int.TryParse(numberPart, out int currentLevelNumber))
@@ -728,6 +798,24 @@ public class MapCreation : MonoBehaviour
         }
         
         return null; // No hay más niveles
+    }
+    
+    // Método para aplicar el material a un tile y todos sus hijos
+    private void ApplyMaterialToTile(GameObject tile, Material material)
+    {
+        // Aplicar al renderer principal
+        Renderer renderer = tile.GetComponent<Renderer>();
+        if (renderer != null)
+        {
+            renderer.material = material;
+        }
+        
+        // Aplicar a todos los renderers de los hijos
+        Renderer[] childRenderers = tile.GetComponentsInChildren<Renderer>();
+        foreach (Renderer childRenderer in childRenderers)
+        {
+            childRenderer.material = material;
+        }
     }
 
 }
