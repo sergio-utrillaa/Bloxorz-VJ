@@ -150,15 +150,17 @@ public class CubeManager : MonoBehaviour
         Renderer renderer = cube.GetComponent<Renderer>();
         if (renderer != null)
         {
-            // Hacer el cubo activo más brillante
+            // Hacer el cubo activo opaco y el inactivo semi-transparente
+            Color currentColor = renderer.material.color;
             if (controlled)
             {
-                renderer.material.color = Color.white;
+                currentColor.a = 1.0f; // Completamente opaco
             }
             else
             {
-                renderer.material.color = new Color(0.7f, 0.7f, 0.7f);
+                currentColor.a = 0.6f; // Semi-transparente
             }
+            renderer.material.color = currentColor;
         }
     }
     
