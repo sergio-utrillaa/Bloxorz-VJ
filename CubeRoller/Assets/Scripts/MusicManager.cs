@@ -35,6 +35,12 @@ public class MusicManager : MonoBehaviour
     [Tooltip("Música para niveles de nieve (Level_7, Level_8)")]
     public AudioClip nieveMusic;
     
+    [Tooltip("Música para niveles de fuego (Level_9, Level_10)")]
+    public AudioClip fuegoMusic;
+    
+    [Tooltip("Música para la pantalla final (End)")]
+    public AudioClip endMusic;
+    
     [Header("Configuración de Audio")]
     [Range(0f, 1f)]
     [Tooltip("Volumen de la música")]
@@ -154,6 +160,20 @@ public class MusicManager : MonoBehaviour
         {
             Debug.Log("Reproduciendo música de nieve");
             return nieveMusic;
+        }
+        
+        // Niveles de fuego (9-10)
+        if (sceneName == "Level_9" || sceneName == "Level_10")
+        {
+            Debug.Log("Reproduciendo música de fuego");
+            return fuegoMusic;
+        }
+        
+        // Pantalla final
+        if (sceneName == "End")
+        {
+            Debug.Log("Reproduciendo música de la pantalla final");
+            return endMusic;
         }
         
         // Si hay más niveles, usar música por defecto o repetir ciclo

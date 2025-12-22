@@ -3063,7 +3063,7 @@ MonoBehaviour:
     type: 3}
   botonDivisorPrefab: {fileID: 0}
   tileNaranjaPrefab: {fileID: 0}
-  tileMaterial: {fileID: 0}
+  tileMaterial: {fileID: 2100000, guid: c45f147a6c726a042a17c689adefefcc, type: 2}
   tileAnimationDuration: 0.5
   tileStartHeight: -10
   delayBetweenTiles: 0.05
@@ -3803,6 +3803,8 @@ MonoBehaviour:
   playaMusic: {fileID: 8300000, guid: 1e41d62647bfb31468616a3a5e4bb42c, type: 3}
   desiertoMusic: {fileID: 8300000, guid: 34bca42eb03b934469d0ff8b8a534bb7, type: 3}
   nieveMusic: {fileID: 8300000, guid: cf8ad8348b878574e976cee11dd93c75, type: 3}
+  fuegoMusic: {fileID: 8300000, guid: b6974c602de13364f88f4980bae17dc2, type: 3}
+  endMusic: {fileID: 8300000, guid: 911179060a78d574ba906172fce7046a, type: 3}
   musicVolume: 0.358
   fadeDuration: 1
 --- !u!4 &1869291731
