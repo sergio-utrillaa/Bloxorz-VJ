@@ -1337,7 +1337,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 3101cba6e926e74409f0b25fd29d4aeb, type: 3}
+  m_Sprite: {fileID: 21300000, guid: df6ae4b45a004694c8eb3e3f9f4e6614, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1520,7 +1520,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animationDuration: 0.5
-  moveDistance: 800
+  moveDistance: 1000
   movementCurve:
     serializedVersion: 2
     m_Curve:

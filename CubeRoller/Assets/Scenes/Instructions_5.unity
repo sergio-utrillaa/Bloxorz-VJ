@@ -440,7 +440,7 @@ MonoBehaviour:
     m_Top: 10
     m_Bottom: 0
   m_ChildAlignment: 1
-  m_Spacing: 40
+  m_Spacing: -170
   m_ChildForceExpandWidth: 1
   m_ChildForceExpandHeight: 1
   m_ChildControlWidth: 0
@@ -1289,7 +1289,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 3101cba6e926e74409f0b25fd29d4aeb, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 58d0ad33c8928f04dae96810beaa15b7, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1472,7 +1472,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animationDuration: 0.5
-  moveDistance: 800
+  moveDistance: 1000
   movementCurve:
     serializedVersion: 2
     m_Curve:
@@ -2026,13 +2026,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'When activated, each switch may behave differently. Some will swap the
-    bridges from open to closed to open each time it is used. Some will only ever
-    make certain bridges open, and activating it again will not make it close.
-
-
-    Green
-    or red coloured squares will flash to indicate which bridges are being operated.'
+  m_text: When activated, each switch will swap the bridges from open to closed to
+    open each time it is used.
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: dc36b3fdc14f47ebb36fd484a67e268a, type: 2}
   m_sharedMaterial: {fileID: 2140032, guid: dc36b3fdc14f47ebb36fd484a67e268a, type: 2}
