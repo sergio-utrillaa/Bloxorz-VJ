@@ -2074,12 +2074,12 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'To move the block around the world, use the left right up and down arrow
-    keys.
+  m_text: 'To move the block around the world, use the left, right, up and down arrow
+    keys or awsd.
 
 
-    Be careful not to fall off the edges - the level will be restarted
-    if this happens.'
+    Be careful not to fall off the edges - the level will be
+    restarted if this happens.'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: dc36b3fdc14f47ebb36fd484a67e268a, type: 2}
   m_sharedMaterial: {fileID: 2140032, guid: dc36b3fdc14f47ebb36fd484a67e268a, type: 2}
