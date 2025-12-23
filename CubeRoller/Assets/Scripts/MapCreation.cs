@@ -139,12 +139,6 @@ public class MapCreation : MonoBehaviour
                 SpawnCube();
             }
         }
-        
-        // Check if X key is pressed to restart map creation
-        if (Input.GetKeyDown(KeyCode.X))
-        {
-            RestartMapCreation();
-        }
     }
     
     // Nuevo método para crear el UI del contador
@@ -543,19 +537,6 @@ public class MapCreation : MonoBehaviour
         // Reiniciar la escena
         Debug.Log("Reiniciando escena...");
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-    }
-    
-    // Public method to restart the map creation (can be called from UI button)
-    public void RestartMapCreation()
-    {
-        // Destroy all child tiles
-        foreach (Transform child in transform)
-        {
-            Destroy(child.gameObject);
-        }
-        
-        // Recreate the map (this will also reset the cube position)
-        CreateMap();
     }
 
     void FindAllBridges()
