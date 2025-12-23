@@ -72,6 +72,12 @@ public class LevelTransitionManager : MonoBehaviour
     {
         isFirstTimeInLevel = true;
 
+        LevelSwitcher levelSwitcher = FindObjectOfType<LevelSwitcher>();
+        if (levelSwitcher != null)
+        {
+            levelSwitcher.enabled = false;
+        }
+
         // PAUSAR EL JUEGO mientras se muestra la pantalla de Stage
         Time.timeScale = 0f;
 
@@ -115,6 +121,11 @@ public class LevelTransitionManager : MonoBehaviour
 
         // REANUDAR EL JUEGO después del fade in
         Time.timeScale = 1.0f;
+
+        if (levelSwitcher != null)
+        {
+            levelSwitcher.enabled = true;
+        }
 
         isFirstTimeInLevel = false;
     }
